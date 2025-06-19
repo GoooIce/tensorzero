@@ -653,7 +653,11 @@ type = "dummy"
 model_name = "reasoner"
 
 [embedding_models.text-embedding-3-small]
-routing = ["openai"]
+routing = ["dummy"]
+
+[embedding_models.text-embedding-3-small.providers.dummy]
+type = "dummy"
+model_name = "text-embedding-3-small"
 
 [embedding_models.text-embedding-3-small.providers.openai]
 type = "openai"

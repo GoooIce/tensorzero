@@ -324,6 +324,8 @@ impl UninitializedEmbeddingProviderConfig {
         let provider_config = self.config.load(provider_types)?;
         Ok(match provider_config {
             ProviderConfig::OpenAI(provider) => EmbeddingProviderConfig::OpenAI(provider),
+            #[cfg(any(test, feature = "e2e_tests"))]
+            ProviderConfig::Dummy(provider) => EmbeddingProviderConfig::Dummy(provider),
             _ => {
                 return Err(Error::new(ErrorDetails::Config {
                     message: format!(
