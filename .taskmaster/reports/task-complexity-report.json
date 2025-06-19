@@ -1,9 +1,9 @@
 {
 	"meta": {
-		"generatedAt": "2025-06-19T09:23:30.036Z",
-		"tasksAnalyzed": 33,
-		"totalTasks": 33,
-		"analysisCount": 33,
+		"generatedAt": "2025-06-19T11:37:43.823Z",
+		"tasksAnalyzed": 35,
+		"totalTasks": 39,
+		"analysisCount": 68,
 		"thresholdScore": 5,
 		"projectName": "Taskmaster",
 		"usedResearch": true
@@ -272,6 +272,286 @@
 			"recommendedSubtasks": 5,
 			"expansionPrompt": "Break down the UI playground development into key features and components, and create subtasks for each.",
 			"reasoning": "This task involves developing a complex UI, which can be broken down into specific features and components."
+		},
+		{
+			"taskId": 38,
+			"taskTitle": "Design Gateway API",
+			"complexityScore": 8,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the API design into specific components such as endpoints, data models, streaming support, tool use, structured generation, batch inference, and multimodal inputs.",
+			"reasoning": "The task involves designing a complex API with multiple features and requirements, which necessitates detailed planning and breakdown into smaller, manageable components."
+		},
+		{
+			"taskId": 39,
+			"taskTitle": "Implement Gateway Core",
+			"complexityScore": 9,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Identify key functionalities such as routing, retries, fallbacks, and load balancing, and create subtasks for each to ensure high performance and low latency.",
+			"reasoning": "Implementing the core functionality of the Gateway in Rust requires addressing multiple performance-critical components, making it a complex task."
+		},
+		{
+			"taskId": 40,
+			"taskTitle": "Implement Gateway Integrations",
+			"complexityScore": 8,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "List the LLM providers to be integrated (e.g., OpenAI, Anthropic, AWS, Azure, GCP) and create subtasks for each integration to ensure comprehensive coverage.",
+			"reasoning": "Integrating with multiple LLM providers involves handling different APIs and ensuring seamless routing, which adds to the complexity."
+		},
+		{
+			"taskId": 41,
+			"taskTitle": "Implement Gateway Prompt Templates",
+			"complexityScore": 6,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Define the types of prompt templates and schemas needed, and create subtasks for implementing each type to ensure consistent, typed interfaces.",
+			"reasoning": "While this task is focused on prompt templates, it still requires careful design and implementation to ensure consistency and type safety."
+		},
+		{
+			"taskId": 42,
+			"taskTitle": "Implement Gateway High Availability Features",
+			"complexityScore": 8,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Identify the high availability features such as routing, retries, fallbacks, and load balancing, and create subtasks for each to ensure the Gateway can handle high throughput and low latency.",
+			"reasoning": "Implementing high availability features is critical for performance and reliability, making it a complex task."
+		},
+		{
+			"taskId": 43,
+			"taskTitle": "Implement Observability Data Models",
+			"complexityScore": 7,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Define the data models for inferences, feedback, datasets, evaluations, and experiments, and create subtasks for each model to ensure comprehensive coverage.",
+			"reasoning": "Designing data models for observability involves capturing various types of data, which requires detailed planning and breakdown."
+		},
+		{
+			"taskId": 44,
+			"taskTitle": "Implement Observability Data Storage",
+			"complexityScore": 8,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Identify the types of data to be stored (e.g., inference data, feedback) and create subtasks for implementing storage solutions for each type using Rust and ClickHouse.",
+			"reasoning": "Implementing data storage for observability involves handling large volumes of data and ensuring efficient retrieval, making it a complex task."
+		},
+		{
+			"taskId": 45,
+			"taskTitle": "Implement Observability UI",
+			"complexityScore": 7,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Define the key features of the UI such as deep-diving into individual inferences and aggregating patterns, and create subtasks for implementing each feature.",
+			"reasoning": "Developing a UI for observability requires a good understanding of user needs and efficient data visualization, adding to the complexity."
+		},
+		{
+			"taskId": 46,
+			"taskTitle": "Implement Programmatic Access to Observability Data",
+			"complexityScore": 7,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Identify the APIs needed for programmatic access and create subtasks for implementing each API to ensure datasets can be built for optimization and evaluation.",
+			"reasoning": "Providing programmatic access to observability data involves designing and implementing APIs, which requires careful planning and breakdown."
+		},
+		{
+			"taskId": 47,
+			"taskTitle": "Implement Replay Historical Inferences",
+			"complexityScore": 7,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Define the steps required to replay historical inferences from the database and create subtasks for each step to ensure comprehensive coverage.",
+			"reasoning": "Replaying historical inferences involves retrieving and processing data, which requires detailed planning and breakdown."
+		},
+		{
+			"taskId": 48,
+			"taskTitle": "Implement OpenTelemetry Integration",
+			"complexityScore": 6,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Identify the data to be exported via OTLP and create subtasks for implementing the integration to ensure data can be exported efficiently.",
+			"reasoning": "Integrating OpenTelemetry involves setting up data export, which requires understanding the OTLP protocol and implementing it in Rust."
+		},
+		{
+			"taskId": 49,
+			"taskTitle": "Implement Fine-Tuning Models",
+			"complexityScore": 8,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Define the fine-tuning techniques to be implemented (e.g., supervised fine-tuning, RLHF) and create subtasks for each technique to ensure models can be fine-tuned using collected data.",
+			"reasoning": "Implementing fine-tuning models involves using machine learning libraries and ensuring the models can learn from data, making it a complex task."
+		},
+		{
+			"taskId": 50,
+			"taskTitle": "Implement Automated Prompt Engineering",
+			"complexityScore": 7,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Identify the algorithms to be implemented (e.g., MIPROv2) and create subtasks for each algorithm to ensure prompts can be engineered automatically.",
+			"reasoning": "Automated prompt engineering involves implementing algorithms and ensuring they can generate effective prompts, adding to the complexity."
+		},
+		{
+			"taskId": 51,
+			"taskTitle": "Implement Dynamic In-Context Learning",
+			"complexityScore": 7,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Define the steps required for dynamic in-context learning and create subtasks for each step to ensure models can learn from context dynamically.",
+			"reasoning": "Implementing dynamic in-context learning involves processing context data and updating models, which requires detailed planning and breakdown."
+		},
+		{
+			"taskId": 52,
+			"taskTitle": "Implement Data Flywheel for Continuous Model Improvement",
+			"complexityScore": 8,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Identify the components of the data flywheel (e.g., data collection, model training, evaluation) and create subtasks for each component to ensure continuous model improvement.",
+			"reasoning": "Implementing a data flywheel involves multiple components and ensuring they work together seamlessly, making it a complex task."
+		},
+		{
+			"taskId": 53,
+			"taskTitle": "Implement Static Evaluations",
+			"complexityScore": 6,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Define the heuristics or LLM judges to be used for static evaluations and create subtasks for implementing each evaluator to ensure comprehensive coverage.",
+			"reasoning": "Implementing static evaluations involves defining and implementing evaluators, which requires careful planning and breakdown."
+		},
+		{
+			"taskId": 54,
+			"taskTitle": "Implement Dynamic Evaluations",
+			"complexityScore": 7,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Identify the end-to-end workflows to be evaluated and create subtasks for implementing dynamic evaluations for each workflow to ensure comprehensive coverage.",
+			"reasoning": "Dynamic evaluations involve evaluating complex workflows, which requires detailed planning and breakdown."
+		},
+		{
+			"taskId": 55,
+			"taskTitle": "Implement Optimization of LLM Judges",
+			"complexityScore": 7,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Define the optimization techniques to be used for LLM judges and create subtasks for implementing each technique to ensure better evaluations.",
+			"reasoning": "Optimizing LLM judges involves implementing optimization algorithms and ensuring they improve evaluation quality, adding to the complexity."
+		},
+		{
+			"taskId": 56,
+			"taskTitle": "Implement A/B Testing for Models",
+			"complexityScore": 7,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Identify the models, prompts, providers, and hyperparameters to be tested and create subtasks for implementing A/B testing for each component to ensure comprehensive coverage.",
+			"reasoning": "Implementing A/B testing involves setting up experiments and analyzing results, which requires detailed planning and breakdown."
+		},
+		{
+			"taskId": 57,
+			"taskTitle": "Implement Randomized Controlled Trials (RCTs)",
+			"complexityScore": 8,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Define the complex, multi-turn systems to be tested using RCTs and create subtasks for implementing each RCT to ensure comprehensive coverage.",
+			"reasoning": "Implementing RCTs involves designing and conducting experiments, which requires careful planning and breakdown."
+		},
+		{
+			"taskId": 58,
+			"taskTitle": "Implement Python Client",
+			"complexityScore": 6,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Identify the key functionalities of the Python client and create subtasks for implementing each functionality to ensure the client can interact with the Gateway API.",
+			"reasoning": "Developing a Python client involves understanding the Gateway API and implementing the client in Python, which requires detailed planning and breakdown."
+		},
+		{
+			"taskId": 59,
+			"taskTitle": "Implement OpenAI-Compatible HTTP API",
+			"complexityScore": 7,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Define the endpoints and data models required for the OpenAI-compatible HTTP API and create subtasks for implementing each component to ensure compatibility.",
+			"reasoning": "Implementing an OpenAI-compatible HTTP API involves understanding the OpenAI API and ensuring compatibility, which adds to the complexity."
+		},
+		{
+			"taskId": 60,
+			"taskTitle": "Implement Documentation and Quick Start Guide",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Identify the key features to be documented and create subtasks for writing documentation for each feature to ensure comprehensive coverage.",
+			"reasoning": "Creating documentation involves understanding the system and writing clear, concise documentation, which requires detailed planning and breakdown."
+		},
+		{
+			"taskId": 61,
+			"taskTitle": "Implement Benchmarks and Performance Testing",
+			"complexityScore": 7,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Identify the performance metrics to be tested and create subtasks for setting up benchmarks and performance tests for each metric to ensure the system can handle high throughput and low latency.",
+			"reasoning": "Implementing benchmarks and performance testing involves setting up tests and analyzing results, which requires detailed planning and breakdown."
+		},
+		{
+			"taskId": 62,
+			"taskTitle": "Implement AI-Assisted Debugging and Root Cause Analysis",
+			"complexityScore": 7,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Define the AI-assisted debugging techniques to be implemented and create subtasks for implementing each technique to ensure the system can provide insights into issues and root causes.",
+			"reasoning": "Implementing AI-assisted debugging involves using machine learning libraries and ensuring the system can provide insights, adding to the complexity."
+		},
+		{
+			"taskId": 63,
+			"taskTitle": "Implement AI-Assisted Data Labeling",
+			"complexityScore": 7,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Define the AI-assisted data labeling techniques to be implemented and create subtasks for implementing each technique to ensure the system can label data automatically.",
+			"reasoning": "Implementing AI-assisted data labeling involves using machine learning libraries and ensuring the system can label data, adding to the complexity."
+		},
+		{
+			"taskId": 64,
+			"taskTitle": "Implement Programmatic Optimization",
+			"complexityScore": 7,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Define the programmatic optimization techniques to be implemented and create subtasks for implementing each technique to ensure the system can optimize models programmatically.",
+			"reasoning": "Implementing programmatic optimization involves designing and implementing optimization algorithms, which requires detailed planning and breakdown."
+		},
+		{
+			"taskId": 65,
+			"taskTitle": "Implement Synthetic Data Generation",
+			"complexityScore": 7,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Define the synthetic data generation techniques to be implemented and create subtasks for implementing each technique to ensure the system can generate synthetic data for training and evaluation.",
+			"reasoning": "Implementing synthetic data generation involves designing and implementing data generation algorithms, which requires detailed planning and breakdown."
+		},
+		{
+			"taskId": 66,
+			"taskTitle": "Implement More Built-In Evaluators",
+			"complexityScore": 6,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Identify the built-in evaluators to be implemented and create subtasks for implementing each evaluator to ensure the system can evaluate models using various evaluators.",
+			"reasoning": "Implementing built-in evaluators involves designing and implementing evaluators, which requires careful planning and breakdown."
+		},
+		{
+			"taskId": 67,
+			"taskTitle": "Implement Headless Evaluations",
+			"complexityScore": 6,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Define the steps required for headless evaluations and create subtasks for implementing each step to ensure the system can evaluate models without a user interface.",
+			"reasoning": "Implementing headless evaluations involves designing and implementing evaluations without a UI, which requires detailed planning and breakdown."
+		},
+		{
+			"taskId": 68,
+			"taskTitle": "Implement Multi-Armed Bandits",
+			"complexityScore": 7,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Define the multi-armed bandit experiments to be implemented and create subtasks for implementing each experiment to ensure the system can perform multi-armed bandit experiments.",
+			"reasoning": "Implementing multi-armed bandits involves designing and conducting experiments, which requires detailed planning and breakdown."
+		},
+		{
+			"taskId": 69,
+			"taskTitle": "Implement AI-Managed Experiments",
+			"complexityScore": 8,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Define the AI-managed experiments to be implemented and create subtasks for implementing each experiment to ensure the system can manage experiments automatically.",
+			"reasoning": "Implementing AI-managed experiments involves using machine learning libraries and ensuring the system can manage experiments, adding to the complexity."
+		},
+		{
+			"taskId": 70,
+			"taskTitle": "Implement UI Playground for Interactive Use",
+			"complexityScore": 6,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Identify the key features of the UI playground and create subtasks for implementing each feature to ensure the playground allows interactive use of the system.",
+			"reasoning": "Developing a UI playground involves understanding user needs and implementing interactive features, which requires detailed planning and breakdown."
+		},
+		{
+			"taskId": 71,
+			"taskTitle": "Implement Embeddings Support",
+			"complexityScore": 6,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Define the steps required to implement embeddings support and create subtasks for each step to ensure the Gateway can handle embeddings.",
+			"reasoning": "Implementing embeddings support involves processing and storing embeddings, which requires detailed planning and breakdown."
+		},
+		{
+			"taskId": 72,
+			"taskTitle": "Implement Real-Time Voice Support",
+			"complexityScore": 8,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Identify the components required for real-time voice support (e.g., audio processing, integration with Gateway) and create subtasks for implementing each component to ensure the Gateway can handle real-time voice inputs.",
+			"reasoning": "Implementing real-time voice support involves handling audio data and integrating with the Gateway, which adds to the complexity."
 		}
 	]
 }

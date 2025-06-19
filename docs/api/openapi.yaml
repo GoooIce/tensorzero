@@ -1,0 +1,378 @@
+openapi: 3.1.0
+info:
+  title: TensorZero Gateway API
+  description: |-
+    The unified API for accessing various LLM providers through the TensorZero Gateway. 
+    It provides a consistent interface for inference, observability, and optimization.
+  version: 0.1.0
+paths:
+  /v1/models:
+    get:
+      summary: List Models
+      description: Retrieve a list of available models.
+      responses:
+        '200':
+          description: A list of available models.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListModelsResponse'
+  /v1/models/{model_id}:
+    get:
+      summary: Get Model Details
+      description: Retrieve details for a specific model.
+      parameters:
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detailed information about the model.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Model'
+  /v1/chat/completions:
+    post:
+      summary: Create Chat Completion
+      description: Generate a response for a given chat conversation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatCompletionRequest'
+      responses:
+        '200':
+          description: A chat completion response, either as a JSON object or a server-sent event stream.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatCompletionResponse'
+            text/event-stream:
+              schema:
+                $ref: '#/components/schemas/ChatCompletionChunk'
+  /v1/embeddings:
+    post:
+      summary: Create Embeddings
+      description: Generate embeddings for a given input.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmbeddingsRequest'
+      responses:
+        '200':
+          description: An embeddings response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmbeddingsResponse'
+  /v1/batch_inference:
+    post:
+      summary: Create Batch Inference Job
+      description: Start a new batch inference job.
+      tags:
+        - Batch Inference
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchInferenceRequest'
+      responses:
+        '202':
+          description: Batch job accepted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchInferenceResponse'
+  /v1/batch_inference/{batch_id}:
+    get:
+      summary: Get Batch Inference Job Status
+      description: Retrieve the status and results of a batch inference job.
+      tags:
+        - Batch Inference
+      parameters:
+        - name: batch_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The status and results of the batch job.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBatchInferenceStatusResponse'
+components:
+  schemas:
+    Model:
+      type: object
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+        created:
+          type: integer
+        owned_by:
+          type: string
+    ListModelsResponse:
+      type: object
+      properties:
+        object:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Model'
+    EmbeddingsRequest:
+      type: object
+      properties:
+        model:
+          type: string
+        input:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+    EmbeddingsResponse:
+      type: object
+      properties:
+        object:
+          type: string
+        model:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Embedding'
+    Embedding:
+      type: object
+      properties:
+        object:
+          type: string
+        embedding:
+          type: array
+          items:
+            type: number
+        index:
+          type: integer
+    ChatCompletionRequest:
+      type: object
+      properties:
+        model:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatMessage'
+        response_format:
+          type: object
+          properties:
+            type:
+              type: string
+              enum: [text, json_object]
+        tools:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tool'
+        tool_choice:
+          oneOf:
+            - type: string
+              enum: [none, auto, required]
+            - type: object
+              properties:
+                type:
+                  type: string
+                  enum: [function]
+                function:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+    ChatMessage:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [system, user, assistant, tool]
+        content:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                $ref: '#/components/schemas/ContentPart'
+          nullable: true
+        tool_calls:
+          type: array
+          items:
+            $ref: '#/components/schemas/ToolCall'
+        tool_call_id:
+          type: string
+    ChatCompletionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+        created:
+          type: integer
+        model:
+          type: string
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatCompletionChoice'
+        usage:
+          $ref: '#/components/schemas/Usage'
+    ChatCompletionChoice:
+      type: object
+      properties:
+        index:
+          type: integer
+        message:
+          $ref: '#/components/schemas/ChatMessage'
+        finish_reason:
+          type: string
+    ChatCompletionChunk:
+      type: object
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+        created:
+          type: integer
+        model:
+          type: string
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatCompletionChunkChoice'
+    ChatCompletionChunkChoice:
+      type: object
+      properties:
+        index:
+          type: integer
+        delta:
+          $ref: '#/components/schemas/ChatCompletionChunkDelta'
+        finish_reason:
+          type: string
+          nullable: true
+    ChatCompletionChunkDelta:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [system, user, assistant]
+        content:
+          type: string
+          nullable: true
+    Usage:
+      type: object
+      properties:
+        prompt_tokens:
+          type: integer
+        completion_tokens:
+          type: integer
+        total_tokens:
+          type: integer
+    Tool:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [function]
+        function:
+          $ref: '#/components/schemas/Function'
+    Function:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        parameters:
+          type: object
+    ToolCall:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [function]
+        function:
+          type: object
+          properties:
+            name:
+              type: string
+            arguments:
+              type: string
+    ContentPart:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum: [text, image_url]
+        text:
+          type: string
+        image_url:
+          $ref: '#/components/schemas/ImageUrl'
+    ImageUrl:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
+          format: uri
+        detail:
+          type: string
+          enum: [auto, low, high]
+          default: auto
+    BatchInferenceRequest:
+      type: object
+      properties:
+        function_name:
+          type: string
+        variant_name:
+          type: string
+        inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchInput'
+    BatchInput:
+      type: object
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatMessage'
+    BatchInferenceResponse:
+      type: object
+      properties:
+        batch_id:
+          type: string
+          format: uuid
+    GetBatchInferenceStatusResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [PENDING, RUNNING, COMPLETED, FAILED]
+        outputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatCompletionResponse' 
