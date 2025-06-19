@@ -1,0 +1,277 @@
+{
+	"meta": {
+		"generatedAt": "2025-06-19T09:23:30.036Z",
+		"tasksAnalyzed": 33,
+		"totalTasks": 33,
+		"analysisCount": 33,
+		"thresholdScore": 5,
+		"projectName": "Taskmaster",
+		"usedResearch": true
+	},
+	"complexityAnalysis": [
+		{
+			"taskId": 1,
+			"taskTitle": "Initialize Rust Project",
+			"complexityScore": 3,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down the initialization process into specific steps for setting up the project structure, adding dependencies, and verifying the setup.",
+			"reasoning": "This task involves several discrete steps that can be broken down into subtasks for better management and tracking."
+		},
+		{
+			"taskId": 2,
+			"taskTitle": "Set Up ClickHouse Database",
+			"complexityScore": 4,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Identify the key steps for installing ClickHouse, configuring tables, ensuring accessibility, and verifying the setup.",
+			"reasoning": "Setting up a database involves multiple steps that can be managed as separate subtasks."
+		},
+		{
+			"taskId": 3,
+			"taskTitle": "Implement Gateway API",
+			"complexityScore": 8,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Break down the API implementation into individual endpoints and their respective functionalities.",
+			"reasoning": "This task is complex and involves multiple endpoints, each with its own set of requirements and tests."
+		},
+		{
+			"taskId": 4,
+			"taskTitle": "Implement Prompt Templates and Schemas",
+			"complexityScore": 5,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Identify the key components of the prompt templates and schemas system, and break them down into manageable subtasks.",
+			"reasoning": "This task involves creating a system for managing templates and schemas, which can be broken down into specific components."
+		},
+		{
+			"taskId": 5,
+			"taskTitle": "Implement High Availability Features",
+			"complexityScore": 7,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break down the high availability features into routing, retries, fallbacks, and load balancing, and create subtasks for each.",
+			"reasoning": "This task involves multiple features that can be managed as separate subtasks for better tracking and implementation."
+		},
+		{
+			"taskId": 6,
+			"taskTitle": "Develop Observability Data Storage",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Identify the key steps for storing inference data and feedback, and break them down into subtasks.",
+			"reasoning": "This task involves data storage and retrieval, which can be broken down into specific steps."
+		},
+		{
+			"taskId": 7,
+			"taskTitle": "Create Observability UI",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the UI development into key features and components, and create subtasks for each.",
+			"reasoning": "This task involves developing a web-based UI, which can be broken down into specific features and components."
+		},
+		{
+			"taskId": 8,
+			"taskTitle": "Implement Programmatic Data Access",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Identify the key components of the programmatic data access system, and break them down into manageable subtasks.",
+			"reasoning": "This task involves creating APIs or SDKs, which can be broken down into specific components."
+		},
+		{
+			"taskId": 9,
+			"taskTitle": "Implement Inference Replay",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break down the inference replay logic into key steps, and create subtasks for each.",
+			"reasoning": "This task involves developing logic for replaying historical inferences, which can be broken down into specific steps."
+		},
+		{
+			"taskId": 10,
+			"taskTitle": "Integrate OpenTelemetry",
+			"complexityScore": 4,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Identify the key steps for integrating OpenTelemetry, and break them down into subtasks.",
+			"reasoning": "This task involves integrating a specific tool, which can be broken down into specific steps."
+		},
+		{
+			"taskId": 11,
+			"taskTitle": "Implement Fine-Tuning Models",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the fine-tuning techniques into specific algorithms and their implementation steps.",
+			"reasoning": "This task involves implementing complex algorithms, which can be broken down into specific steps."
+		},
+		{
+			"taskId": 12,
+			"taskTitle": "Develop Automated Prompt Engineering",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Identify the key algorithms for automated prompt engineering, and break them down into manageable subtasks.",
+			"reasoning": "This task involves developing complex algorithms, which can be broken down into specific steps."
+		},
+		{
+			"taskId": 13,
+			"taskTitle": "Implement Dynamic In-Context Learning",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the dynamic in-context learning logic into key steps, and create subtasks for each.",
+			"reasoning": "This task involves developing complex learning algorithms, which can be broken down into specific steps."
+		},
+		{
+			"taskId": 14,
+			"taskTitle": "Create Data Flywheel for Continuous Improvement",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Identify the key components of the data flywheel system, and break them down into manageable subtasks.",
+			"reasoning": "This task involves creating a complex system for continuous improvement, which can be broken down into specific components."
+		},
+		{
+			"taskId": 15,
+			"taskTitle": "Implement Static Evaluations",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break down the static evaluation system into key components, and create subtasks for each.",
+			"reasoning": "This task involves developing a system for static evaluations, which can be broken down into specific components."
+		},
+		{
+			"taskId": 16,
+			"taskTitle": "Implement Dynamic Workflow Evaluations",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Identify the key steps for dynamic workflow evaluations, and break them down into subtasks.",
+			"reasoning": "This task involves developing logic for dynamic evaluations, which can be broken down into specific steps."
+		},
+		{
+			"taskId": 17,
+			"taskTitle": "Optimize LLM Judges",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break down the optimization techniques for LLM judges into key steps, and create subtasks for each.",
+			"reasoning": "This task involves optimizing complex algorithms, which can be broken down into specific steps."
+		},
+		{
+			"taskId": 18,
+			"taskTitle": "Implement A/B Testing",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Identify the key components of the A/B testing system, and break them down into manageable subtasks.",
+			"reasoning": "This task involves developing a system for A/B testing, which can be broken down into specific components."
+		},
+		{
+			"taskId": 19,
+			"taskTitle": "Implement Randomized Controlled Trials (RCTs)",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the RCT logic into key steps, and create subtasks for each.",
+			"reasoning": "This task involves developing complex logic for RCTs, which can be broken down into specific steps."
+		},
+		{
+			"taskId": 20,
+			"taskTitle": "Develop Python Client",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Identify the key components of the Python client, and break them down into manageable subtasks.",
+			"reasoning": "This task involves developing a client, which can be broken down into specific components."
+		},
+		{
+			"taskId": 21,
+			"taskTitle": "Document the System",
+			"complexityScore": 4,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down the documentation process into key sections, and create subtasks for each.",
+			"reasoning": "This task involves creating comprehensive documentation, which can be broken down into specific sections."
+		},
+		{
+			"taskId": 22,
+			"taskTitle": "Prepare for Deployment",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Identify the key steps for preparing the system for deployment, and break them down into subtasks.",
+			"reasoning": "This task involves multiple steps for deployment preparation, which can be managed as separate subtasks."
+		},
+		{
+			"taskId": 23,
+			"taskTitle": "Implement Embeddings Support",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break down the embeddings support logic into key steps, and create subtasks for each.",
+			"reasoning": "This task involves developing logic for handling embeddings, which can be broken down into specific steps."
+		},
+		{
+			"taskId": 24,
+			"taskTitle": "Implement Real-Time Voice Support",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Identify the key components of the real-time voice support system, and break them down into manageable subtasks.",
+			"reasoning": "This task involves developing complex logic for real-time voice support, which can be broken down into specific components."
+		},
+		{
+			"taskId": 25,
+			"taskTitle": "Implement AI-Assisted Debugging",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the AI-assisted debugging logic into key steps, and create subtasks for each.",
+			"reasoning": "This task involves developing complex AI algorithms, which can be broken down into specific steps."
+		},
+		{
+			"taskId": 26,
+			"taskTitle": "Implement AI-Assisted Data Labeling",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Identify the key components of the AI-assisted data labeling system, and break them down into manageable subtasks.",
+			"reasoning": "This task involves developing complex AI algorithms, which can be broken down into specific components."
+		},
+		{
+			"taskId": 27,
+			"taskTitle": "Implement Programmatic Optimization",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break down the programmatic optimization logic into key steps, and create subtasks for each.",
+			"reasoning": "This task involves developing logic for programmatic optimization, which can be broken down into specific steps."
+		},
+		{
+			"taskId": 28,
+			"taskTitle": "Implement Synthetic Data Generation",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Identify the key components of the synthetic data generation system, and break them down into manageable subtasks.",
+			"reasoning": "This task involves developing logic for synthetic data generation, which can be broken down into specific components."
+		},
+		{
+			"taskId": 29,
+			"taskTitle": "Implement More Built-In Evaluators",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break down the new evaluators into specific use cases, and create subtasks for each.",
+			"reasoning": "This task involves developing multiple evaluators, which can be broken down into specific use cases."
+		},
+		{
+			"taskId": 30,
+			"taskTitle": "Implement Headless Evaluations",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Identify the key steps for headless evaluations, and break them down into subtasks.",
+			"reasoning": "This task involves developing logic for headless evaluations, which can be broken down into specific steps."
+		},
+		{
+			"taskId": 31,
+			"taskTitle": "Implement Multi-Armed Bandits",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break down the multi-armed bandit algorithms into key steps, and create subtasks for each.",
+			"reasoning": "This task involves developing complex algorithms, which can be broken down into specific steps."
+		},
+		{
+			"taskId": 32,
+			"taskTitle": "Implement AI-Managed Experiments",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Identify the key components of the AI-managed experiment system, and break them down into manageable subtasks.",
+			"reasoning": "This task involves developing complex AI algorithms, which can be broken down into specific components."
+		},
+		{
+			"taskId": 33,
+			"taskTitle": "Develop UI Playground",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the UI playground development into key features and components, and create subtasks for each.",
+			"reasoning": "This task involves developing a complex UI, which can be broken down into specific features and components."
+		}
+	]
+}

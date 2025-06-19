@@ -1,0 +1,79 @@
+<context>
+# Overview
+TensorZero is an open-source stack for industrial-grade LLM applications. It unifies an LLM gateway, observability, optimization, evaluations, and experimentation. It aims to solve the challenges of building, deploying, and maintaining complex LLM systems in production environments by providing a robust, performant, and unified platform. It's designed for developers and organizations that require low latency, high throughput, type safety, and a self-hosted solution for their LLM applications.
+
+# Core Features
+- **Gateway**:
+  - Unified API for accessing major LLM providers (OpenAI, Anthropic, etc.) and self-hosted models.
+  - Supports streaming, tool use, structured generation (JSON mode), batch inference, and multimodal inputs.
+  - Built-in prompt templates and schemas for consistent, typed interfaces.
+  - High performance (<1ms p99 latency overhead at 10k+ QPS) due to Rust implementation.
+  - High availability features: routing, retries, fallbacks, load balancing.
+- **Observability**:
+  - Store all inference data and feedback (metrics, human edits) in a user-owned database (ClickHouse).
+  - UI for deep-diving into individual inferences and aggregate patterns.
+  - Programmatic access to data for building datasets for optimization and evaluation.
+  - Replay historical inferences for debugging and experimentation.
+  - OpenTelemetry (OTLP) integration.
+- **Optimization**:
+  - Fine-tuning models with techniques like supervised fine-tuning and RLHF.
+  - Automated prompt engineering algorithms (e.g., MIPROv2).
+  - Dynamic in-context learning and advanced sampling strategies.
+  - Creates a data flywheel for continuous model improvement.
+- **Evaluations**:
+  - Static evaluations using heuristics or LLM judges (like unit tests).
+  - Dynamic, end-to-end workflow evaluations (like integration tests).
+  - Optimization of LLM judges themselves.
+- **Experimentation**:
+  - Built-in A/B testing for models, prompts, providers, and hyperparameters.
+  - Principled, randomized controlled trials (RCTs) for complex, multi-turn systems.
+
+# User Experience
+- **Primary Users**: Developers building LLM applications.
+- **Interaction Model**:
+  - **Programmatic**: Python client (recommended), any OpenAI-compatible SDK, or a direct HTTP API.
+  - **UI**: A web-based user interface for observability, exploring data, and managing experiments.
+- **Key User Flows**:
+  - A developer integrates their application with the TensorZero Gateway once.
+  - They can then route requests to any backend model provider without changing their application code.
+  - They can view detailed logs, traces, and metrics in the TensorZero UI.
+  - They can create datasets from production data to fine-tune models or run evaluations.
+  - They can A/B test new prompts or models safely in production.
+</context>
+<PRD>
+# Technical Architecture
+- **Core Language**: Rust, for performance and safety.
+- **Database**: ClickHouse, for storing observability data.
+- **Deployment**: Self-hosted. Can be deployed using Docker or Kubernetes (Helm chart available). GitOps-friendly configuration-as-code.
+- **APIs and Integrations**:
+  - Exposes an OpenAI-compatible HTTP API.
+  - Provides a native Python client.
+  - Integrates with numerous LLM providers (Anthropic, AWS, Azure, GCP, OpenAI, etc.).
+  - Exports data via OpenTelemetry.
+- **Data Models**: The system manages data models for inferences, feedback, datasets, evaluations, and experiments.
+
+# Development Roadmap
+- **MVP (Current Features)**:
+  - The existing feature set as described in the Core Features section.
+- **Future Enhancements (Features listed as "Soon")**:
+  - **Gateway**: Embeddings; real-time voice.
+  - **Observability**: AI-assisted debugging and root cause analysis; AI-assisted data labeling.
+  - **Optimization**: Programmatic optimization; synthetic data generation.
+  - **Evaluations**: More built-in evaluators; headless evaluations.
+  - **Experimentation**: Multi-armed bandits; AI-managed experiments.
+  - **UI**: A UI playground for interactive use.
+
+# Logical Dependency Chain
+1.  **Gateway**: The foundational component that all other services depend on. It must be built first to enable any inference.
+2.  **Observability**: Depends on the Gateway to capture data. It's the next critical step to provide visibility and data for other components.
+3.  **Optimization & Evaluations**: These components depend on the data collected by Observability. They can be developed in parallel.
+4.  **Experimentation**: This is a higher-level feature that builds upon the Gateway (for routing/splitting traffic) and Observability (for analyzing results).
+
+# Risks and Mitigations
+- **Risk**: The LLM landscape evolves very rapidly (new models, providers, techniques).
+  - **Mitigation**: The provider-agnostic architecture of the Gateway allows for quick integration of new providers. The modular design allows for adding new optimization and evaluation techniques.
+- **Risk**: Ensuring stability, high performance, and correctness under heavy industrial-grade workloads.
+  - **Mitigation**: The core is implemented in Rust. The project includes benchmarks and a focus on production-readiness (e.g., high-availability features).
+- **Risk**: Complexity of the unified system can be overwhelming for new users.
+  - **Mitigation**: Provide clear documentation, a "Quick Start" guide, and the ability to adopt features incrementally. The OpenAI-compatible API lowers the barrier to entry.
+</PRD> 

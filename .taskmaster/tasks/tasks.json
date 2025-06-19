@@ -1,0 +1,443 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Initialize Rust Project",
+        "description": "Set up the Rust project structure and dependencies.",
+        "details": "Use Cargo to initialize a new Rust project. Include dependencies for HTTP server (e.g., Actix-web), database interactions (e.g., ClickHouse client), and other necessary crates.",
+        "testStrategy": "Verify the project compiles and runs without errors. Check that all dependencies are correctly included in Cargo.toml.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set Up Project Structure",
+            "description": "Create the necessary directories and files for the project.",
+            "dependencies": [],
+            "details": "Include directories for source code, tests, and configuration files.",
+            "status": "done"
+          },
+          {
+            "id": 2,
+            "title": "Add Project Dependencies",
+            "description": "Install the required libraries and frameworks for the project.",
+            "dependencies": [
+              1
+            ],
+            "details": "Use a package manager to add dependencies listed in the project documentation.",
+            "status": "done"
+          },
+          {
+            "id": 3,
+            "title": "Verify Project Setup",
+            "description": "Ensure that the project structure and dependencies are correctly set up.",
+            "dependencies": [
+              2
+            ],
+            "details": "Run initial tests and build the project to verify the setup.",
+            "status": "done"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Set Up ClickHouse Database",
+        "description": "Configure ClickHouse for storing observability data.",
+        "details": "Install ClickHouse and set up the necessary tables for storing inference data, feedback, metrics, and other observability data. Ensure the database is accessible from the Rust application.",
+        "testStrategy": "Verify that the database is running and that the Rust application can connect to it. Insert and retrieve sample data to ensure proper configuration.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Install ClickHouse",
+            "description": "Download and install ClickHouse on the server.",
+            "dependencies": [],
+            "details": "Ensure all prerequisites are met and follow the official installation guide.",
+            "status": "pending"
+          },
+          {
+            "id": 2,
+            "title": "Configure ClickHouse Tables",
+            "description": "Create and configure the necessary tables in ClickHouse.",
+            "dependencies": [
+              1
+            ],
+            "details": "Define schemas and data types according to the project requirements.",
+            "status": "pending"
+          },
+          {
+            "id": 3,
+            "title": "Ensure Accessibility",
+            "description": "Set up access controls and network configurations.",
+            "dependencies": [
+              1
+            ],
+            "details": "Configure firewall rules, user permissions, and network settings.",
+            "status": "pending"
+          },
+          {
+            "id": 4,
+            "title": "Verify ClickHouse Setup",
+            "description": "Test the installation and configuration to ensure everything is working correctly.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Run queries, check logs, and perform performance tests.",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Implement Gateway API",
+        "description": "Develop the core API for the Gateway.",
+        "details": "Create the HTTP API using Actix-web. Implement endpoints for accessing LLM providers, supporting streaming, tool use, structured generation, batch inference, and multimodal inputs. Ensure the API is OpenAI-compatible.",
+        "testStrategy": "Write unit tests for each API endpoint. Use tools like Postman or curl to manually test the API endpoints. Ensure the API meets the performance requirements (<1ms p99 latency overhead at 10k+ QPS).",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Implement Prompt Templates and Schemas",
+        "description": "Develop built-in prompt templates and schemas for consistent, typed interfaces.",
+        "details": "Create a system for managing prompt templates and schemas. Ensure they are easily extensible and can be used across different LLM providers.",
+        "testStrategy": "Write unit tests to validate the prompt templates and schemas. Ensure they can be used consistently across different API endpoints.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Implement High Availability Features",
+        "description": "Add routing, retries, fallbacks, and load balancing to the Gateway.",
+        "details": "Use Rust libraries to implement high availability features. Ensure the system can handle failures gracefully and route traffic appropriately.",
+        "testStrategy": "Write integration tests to simulate failures and ensure the system recovers correctly. Use load testing tools to validate the performance under high traffic.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Develop Observability Data Storage",
+        "description": "Store inference data and feedback in ClickHouse.",
+        "details": "Implement the logic to store all inference data and feedback in ClickHouse. Ensure the data is structured and easily queryable.",
+        "testStrategy": "Write integration tests to validate data storage and retrieval. Ensure the data is correctly stored and can be queried efficiently.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Create Observability UI",
+        "description": "Develop a web-based UI for exploring observability data.",
+        "details": "Use a frontend framework (e.g., React) to create the UI. Implement features for deep-diving into individual inferences and aggregate patterns. Ensure the UI is user-friendly and provides valuable insights.",
+        "testStrategy": "Write end-to-end tests using tools like Cypress. Ensure the UI correctly displays data and provides the expected functionality.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Implement Programmatic Data Access",
+        "description": "Provide programmatic access to observability data.",
+        "details": "Create APIs or SDKs for accessing the observability data programmatically. Ensure the data can be used for building datasets for optimization and evaluation.",
+        "testStrategy": "Write integration tests to validate programmatic data access. Ensure the data can be retrieved and used as expected.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Implement Inference Replay",
+        "description": "Enable replaying historical inferences for debugging and experimentation.",
+        "details": "Develop the logic to replay historical inferences. Ensure the system can accurately reproduce past inferences.",
+        "testStrategy": "Write integration tests to validate the inference replay functionality. Ensure the system can replay inferences correctly and provide valuable insights.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Integrate OpenTelemetry",
+        "description": "Add OpenTelemetry integration for exporting data.",
+        "details": "Implement OpenTelemetry (OTLP) integration to export observability data. Ensure the data can be consumed by other monitoring and tracing tools.",
+        "testStrategy": "Write integration tests to validate OpenTelemetry integration. Ensure the data is correctly exported and can be consumed by other tools.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Implement Fine-Tuning Models",
+        "description": "Develop fine-tuning capabilities for models.",
+        "details": "Implement techniques like supervised fine-tuning and RLHF. Ensure the system can fine-tune models based on user-provided data.",
+        "testStrategy": "Write integration tests to validate fine-tuning capabilities. Ensure the models can be fine-tuned correctly and provide improved performance.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Develop Automated Prompt Engineering",
+        "description": "Implement automated prompt engineering algorithms.",
+        "details": "Develop algorithms like MIPROv2 for automated prompt engineering. Ensure the system can generate effective prompts based on user input.",
+        "testStrategy": "Write integration tests to validate automated prompt engineering. Ensure the prompts are effective and improve model performance.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Implement Dynamic In-Context Learning",
+        "description": "Add dynamic in-context learning and advanced sampling strategies.",
+        "details": "Develop the logic for dynamic in-context learning and advanced sampling strategies. Ensure the system can adapt to new data and improve model performance over time.",
+        "testStrategy": "Write integration tests to validate dynamic in-context learning. Ensure the system can adapt to new data and provide improved performance.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Create Data Flywheel for Continuous Improvement",
+        "description": "Develop a data flywheel for continuous model improvement.",
+        "details": "Implement a system for continuously collecting data and improving models. Ensure the system can automatically fine-tune models based on new data.",
+        "testStrategy": "Write integration tests to validate the data flywheel. Ensure the system can continuously collect data and improve models over time.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 15,
+        "title": "Implement Static Evaluations",
+        "description": "Develop static evaluation capabilities using heuristics or LLM judges.",
+        "details": "Create a system for static evaluations using heuristics or LLM judges. Ensure the evaluations can be used to validate model performance.",
+        "testStrategy": "Write integration tests to validate static evaluations. Ensure the evaluations are accurate and provide valuable insights.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 16,
+        "title": "Implement Dynamic Workflow Evaluations",
+        "description": "Add dynamic, end-to-end workflow evaluations.",
+        "details": "Develop the logic for dynamic workflow evaluations. Ensure the evaluations can be used to validate complex, multi-turn systems.",
+        "testStrategy": "Write integration tests to validate dynamic workflow evaluations. Ensure the evaluations are accurate and provide valuable insights.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 17,
+        "title": "Optimize LLM Judges",
+        "description": "Implement optimization for LLM judges.",
+        "details": "Develop techniques for optimizing LLM judges. Ensure the judges can provide accurate and reliable evaluations.",
+        "testStrategy": "Write integration tests to validate LLM judge optimization. Ensure the judges are accurate and reliable.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 18,
+        "title": "Implement A/B Testing",
+        "description": "Add built-in A/B testing for models, prompts, providers, and hyperparameters.",
+        "details": "Develop the logic for A/B testing. Ensure the system can safely test new models, prompts, providers, and hyperparameters in production.",
+        "testStrategy": "Write integration tests to validate A/B testing. Ensure the system can safely test new components and provide valuable insights.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 19,
+        "title": "Implement Randomized Controlled Trials (RCTs)",
+        "description": "Add principled, randomized controlled trials for complex, multi-turn systems.",
+        "details": "Develop the logic for RCTs. Ensure the system can accurately test complex, multi-turn systems and provide reliable results.",
+        "testStrategy": "Write integration tests to validate RCTs. Ensure the system can accurately test complex systems and provide reliable results.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 20,
+        "title": "Develop Python Client",
+        "description": "Create a native Python client for interacting with the Gateway.",
+        "details": "Use a Python framework (e.g., Flask or FastAPI) to create the client. Ensure the client is easy to use and provides all necessary functionality.",
+        "testStrategy": "Write unit tests for the Python client. Ensure the client can interact with the Gateway correctly and provides the expected functionality.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 21,
+        "title": "Document the System",
+        "description": "Create comprehensive documentation for the system.",
+        "details": "Write clear and concise documentation covering all aspects of the system. Include a 'Quick Start' guide and detailed explanations of each feature.",
+        "testStrategy": "Review the documentation for accuracy and completeness. Ensure it covers all necessary aspects of the system and is easy to understand.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 22,
+        "title": "Prepare for Deployment",
+        "description": "Set up the system for self-hosted deployment using Docker or Kubernetes.",
+        "details": "Create Dockerfiles and Kubernetes manifests for deploying the system. Ensure the deployment process is smooth and GitOps-friendly.",
+        "testStrategy": "Test the deployment process in a staging environment. Ensure the system can be deployed correctly and is functional.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 23,
+        "title": "Implement Embeddings Support",
+        "description": "Add support for embeddings in the Gateway.",
+        "details": "Develop the logic for handling embeddings. Ensure the system can process and store embeddings correctly.",
+        "testStrategy": "Write integration tests to validate embeddings support. Ensure the system can process and store embeddings correctly.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 24,
+        "title": "Implement Real-Time Voice Support",
+        "description": "Add real-time voice support to the Gateway.",
+        "details": "Develop the logic for handling real-time voice inputs and outputs. Ensure the system can process voice data correctly and provide real-time responses.",
+        "testStrategy": "Write integration tests to validate real-time voice support. Ensure the system can process voice data correctly and provide real-time responses.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 25,
+        "title": "Implement AI-Assisted Debugging",
+        "description": "Add AI-assisted debugging and root cause analysis to the Observability component.",
+        "details": "Develop AI algorithms for debugging and root cause analysis. Ensure the system can provide valuable insights and help users resolve issues quickly.",
+        "testStrategy": "Write integration tests to validate AI-assisted debugging. Ensure the system can provide valuable insights and help users resolve issues quickly.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 26,
+        "title": "Implement AI-Assisted Data Labeling",
+        "description": "Add AI-assisted data labeling to the Observability component.",
+        "details": "Develop AI algorithms for data labeling. Ensure the system can accurately label data and help users build high-quality datasets.",
+        "testStrategy": "Write integration tests to validate AI-assisted data labeling. Ensure the system can accurately label data and help users build high-quality datasets.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 27,
+        "title": "Implement Programmatic Optimization",
+        "description": "Add programmatic optimization capabilities to the Optimization component.",
+        "details": "Develop the logic for programmatic optimization. Ensure the system can automatically optimize models and prompts based on user input.",
+        "testStrategy": "Write integration tests to validate programmatic optimization. Ensure the system can automatically optimize models and prompts correctly.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 28,
+        "title": "Implement Synthetic Data Generation",
+        "description": "Add synthetic data generation capabilities to the Optimization component.",
+        "details": "Develop the logic for generating synthetic data. Ensure the system can create high-quality synthetic data for training and evaluation.",
+        "testStrategy": "Write integration tests to validate synthetic data generation. Ensure the system can create high-quality synthetic data.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 29,
+        "title": "Implement More Built-In Evaluators",
+        "description": "Add more built-in evaluators to the Evaluations component.",
+        "details": "Develop additional evaluators for different use cases. Ensure the evaluators can provide accurate and reliable evaluations.",
+        "testStrategy": "Write integration tests to validate the new evaluators. Ensure they provide accurate and reliable evaluations.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 30,
+        "title": "Implement Headless Evaluations",
+        "description": "Add headless evaluation capabilities to the Evaluations component.",
+        "details": "Develop the logic for headless evaluations. Ensure the system can evaluate models without user interaction.",
+        "testStrategy": "Write integration tests to validate headless evaluations. Ensure the system can evaluate models accurately without user interaction.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 31,
+        "title": "Implement Multi-Armed Bandits",
+        "description": "Add multi-armed bandit algorithms to the Experimentation component.",
+        "details": "Develop multi-armed bandit algorithms for optimizing experiments. Ensure the system can automatically select the best models and prompts.",
+        "testStrategy": "Write integration tests to validate multi-armed bandits. Ensure the system can automatically select the best models and prompts.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 32,
+        "title": "Implement AI-Managed Experiments",
+        "description": "Add AI-managed experiment capabilities to the Experimentation component.",
+        "details": "Develop AI algorithms for managing experiments. Ensure the system can automatically design and run experiments.",
+        "testStrategy": "Write integration tests to validate AI-managed experiments. Ensure the system can automatically design and run experiments correctly.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 33,
+        "title": "Develop UI Playground",
+        "description": "Create a UI playground for interactive use.",
+        "details": "Develop an interactive UI playground using a frontend framework (e.g., React). Ensure the playground provides a user-friendly interface for exploring and testing the system.",
+        "testStrategy": "Write end-to-end tests using tools like Cypress. Ensure the UI playground is functional and provides the expected features.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-06-19T09:22:26.232Z",
+      "updated": "2025-06-19T09:25:04.700Z",
+      "description": "Tasks for master context"
+    }
+  }
+}
