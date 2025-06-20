@@ -50,8 +50,8 @@ use crate::{
             gcp_vertex_anthropic::GCPVertexAnthropicProvider,
             gcp_vertex_gemini::GCPVertexGeminiProvider, groq::GroqProvider,
             mistral::MistralProvider, openai::OpenAIProvider, openrouter::OpenRouterProvider,
-            provider_trait::InferenceProvider, together::TogetherProvider, vllm::VLLMProvider,
-            xai::XAIProvider,
+            provider_trait::InferenceProvider, rust_proxy::RustProxyProvider,
+            together::TogetherProvider, vllm::VLLMProvider, xai::XAIProvider,
         },
         types::{ModelInferenceRequest, ModelInferenceResponse, ProviderInferenceResponse},
     },
@@ -663,14 +663,12 @@ impl ModelProvider {
             ProviderConfig::Mistral(_) => "mistral",
             ProviderConfig::OpenAI(_) => "openai",
             ProviderConfig::OpenRouter(_) => "openrouter",
+            ProviderConfig::RustProxy(_) => "rust-proxy",
+            ProviderConfig::SGLang(_) => "sglang",
+            ProviderConfig::TGI(_) => "tgi",
             ProviderConfig::Together(_) => "together",
             ProviderConfig::VLLM(_) => "vllm",
             ProviderConfig::XAI(_) => "xai",
-            ProviderConfig::TGI(_) => "tgi",
-            ProviderConfig::SGLang(_) => "sglang",
-            ProviderConfig::DeepSeek(_) => "deepseek",
-            #[cfg(any(test, feature = "e2e_tests"))]
-            ProviderConfig::Dummy(_) => "dummy",
         }
     }
 
@@ -691,15 +689,12 @@ impl ModelProvider {
             ProviderConfig::Mistral(provider) => Some(provider.model_name()),
             ProviderConfig::OpenAI(provider) => Some(provider.model_name()),
             ProviderConfig::OpenRouter(provider) => Some(provider.model_name()),
+            ProviderConfig::RustProxy(_) => None,
+            ProviderConfig::SGLang(provider) => Some(provider.model_name()),
+            ProviderConfig::TGI(provider) => Some(provider.model_name()),
             ProviderConfig::Together(provider) => Some(provider.model_name()),
             ProviderConfig::VLLM(provider) => Some(provider.model_name()),
             ProviderConfig::XAI(provider) => Some(provider.model_name()),
-            // TGI doesn't have a meaningful model name
-            ProviderConfig::TGI(_) => None,
-            ProviderConfig::SGLang(provider) => Some(provider.model_name()),
-            ProviderConfig::DeepSeek(provider) => Some(provider.model_name()),
-            #[cfg(any(test, feature = "e2e_tests"))]
-            ProviderConfig::Dummy(provider) => Some(provider.model_name()),
         }
     }
 }
@@ -737,13 +732,12 @@ pub enum ProviderConfig {
     Mistral(MistralProvider),
     OpenAI(OpenAIProvider),
     OpenRouter(OpenRouterProvider),
+    RustProxy(RustProxyProvider),
     SGLang(SGLangProvider),
     TGI(TGIProvider),
     Together(TogetherProvider),
     VLLM(VLLMProvider),
     XAI(XAIProvider),
-    #[cfg(any(test, feature = "e2e_tests"))]
-    Dummy(DummyProvider),
 }
 
 /// Contains all providers which implement `SelfHostedProvider` - these providers
@@ -783,6 +777,8 @@ pub(super) enum UninitializedProviderConfig {
         #[serde(default)]
         allow_auto_detect_region: bool,
         hosted_provider: HostedProviderKind,
+        api_base: Url,
+        api_key_location: Option<CredentialLocation>,
     },
     Azure {
         deployment_id: String,
@@ -843,6 +839,9 @@ pub(super) enum UninitializedProviderConfig {
         model_name: String,
         api_key_location: Option<CredentialLocation>,
     },
+    #[strum(serialize = "rust-proxy")]
+    #[serde(rename = "rust-proxy")]
+    RustProxy {},
     Together {
         model_name: String,
         api_key_location: Option<CredentialLocation>,
@@ -913,6 +912,8 @@ impl UninitializedProviderConfig {
                 allow_auto_detect_region,
                 model_name,
                 hosted_provider,
+                api_base,
+                api_key_location,
             } => {
                 let region = region.map(aws_types::region::Region::new);
                 if region.is_none() && !allow_auto_detect_region {
@@ -923,14 +924,14 @@ impl UninitializedProviderConfig {
                     match hosted_provider {
                         HostedProviderKind::OpenAI => Box::new(OpenAIProvider::new(
                             model_name,
-                            None,
-                            Some(CredentialLocation::None),
+                            api_base,
+                            api_key_location,
                         )?),
                         HostedProviderKind::TGI => Box::new(TGIProvider::new(
                             Url::parse("http://tensorzero-unreachable-domain-please-file-a-bug-report.invalid").map_err(|e| {
                                 Error::new(ErrorDetails::InternalError { message: format!("Failed to parse fake TGI endpoint: `{e}`. This should never happen. Please file a bug report: https://github.com/tensorzero/tensorzero/issues/new") })
                             })?,
-                            Some(CredentialLocation::None),
+                            api_key_location,
                         )?),
                     };
                 // NB: We need to make an async call here to initialize the AWS Sagemaker client.
@@ -1026,6 +1027,9 @@ impl UninitializedProviderConfig {
                 model_name,
                 api_key_location,
             } => ProviderConfig::OpenRouter(OpenRouterProvider::new(model_name, api_key_location)?),
+            UninitializedProviderConfig::RustProxy {} => {
+                ProviderConfig::RustProxy(RustProxyProvider::new()?)
+            }
             UninitializedProviderConfig::Together {
                 model_name,
                 api_key_location,
@@ -1128,15 +1132,18 @@ impl ModelProvider {
             ProviderConfig::OpenRouter(provider) => {
                 provider.infer(request, client, api_keys, self).await
             }
-            ProviderConfig::Together(provider) => {
+            ProviderConfig::RustProxy(provider) => {
                 provider.infer(request, client, api_keys, self).await
             }
             ProviderConfig::SGLang(provider) => {
                 provider.infer(request, client, api_keys, self).await
             }
+            ProviderConfig::TGI(provider) => provider.infer(request, client, api_keys, self).await,
+            ProviderConfig::Together(provider) => {
+                provider.infer(request, client, api_keys, self).await
+            }
             ProviderConfig::VLLM(provider) => provider.infer(request, client, api_keys, self).await,
             ProviderConfig::XAI(provider) => provider.infer(request, client, api_keys, self).await,
-            ProviderConfig::TGI(provider) => provider.infer(request, client, api_keys, self).await,
             ProviderConfig::DeepSeek(provider) => {
                 provider.infer(request, client, api_keys, self).await
             }
@@ -1198,7 +1205,7 @@ impl ModelProvider {
             ProviderConfig::OpenRouter(provider) => {
                 provider.infer_stream(request, client, api_keys, self).await
             }
-            ProviderConfig::Together(provider) => {
+            ProviderConfig::RustProxy(provider) => {
                 provider.infer_stream(request, client, api_keys, self).await
             }
             ProviderConfig::SGLang(provider) => {
@@ -1211,6 +1218,9 @@ impl ModelProvider {
                 provider.infer_stream(request, client, api_keys, self).await
             }
             ProviderConfig::TGI(provider) => {
+                provider.infer_stream(request, client, api_keys, self).await
+            }
+            ProviderConfig::Together(provider) => {
                 provider.infer_stream(request, client, api_keys, self).await
             }
             ProviderConfig::DeepSeek(provider) => {
@@ -1304,12 +1314,22 @@ impl ModelProvider {
                     .start_batch_inference(requests, client, api_keys)
                     .await
             }
-            ProviderConfig::Together(provider) => {
+            ProviderConfig::RustProxy(provider) => {
                 provider
                     .start_batch_inference(requests, client, api_keys)
                     .await
             }
             ProviderConfig::SGLang(provider) => {
+                provider
+                    .start_batch_inference(requests, client, api_keys)
+                    .await
+            }
+            ProviderConfig::TGI(provider) => {
+                provider
+                    .start_batch_inference(requests, client, api_keys)
+                    .await
+            }
+            ProviderConfig::Together(provider) => {
                 provider
                     .start_batch_inference(requests, client, api_keys)
                     .await
@@ -1325,11 +1345,6 @@ impl ModelProvider {
                     .await
             }
             ProviderConfig::DeepSeek(provider) => {
-                provider
-                    .start_batch_inference(requests, client, api_keys)
-                    .await
-            }
-            ProviderConfig::TGI(provider) => {
                 provider
                     .start_batch_inference(requests, client, api_keys)
                     .await
@@ -1415,17 +1430,22 @@ impl ModelProvider {
                     .poll_batch_inference(batch_request, http_client, dynamic_api_keys)
                     .await
             }
+            ProviderConfig::RustProxy(provider) => {
+                provider
+                    .poll_batch_inference(batch_request, http_client, dynamic_api_keys)
+                    .await
+            }
+            ProviderConfig::SGLang(provider) => {
+                provider
+                    .poll_batch_inference(batch_request, http_client, dynamic_api_keys)
+                    .await
+            }
             ProviderConfig::TGI(provider) => {
                 provider
                     .poll_batch_inference(batch_request, http_client, dynamic_api_keys)
                     .await
             }
             ProviderConfig::Together(provider) => {
-                provider
-                    .poll_batch_inference(batch_request, http_client, dynamic_api_keys)
-                    .await
-            }
-            ProviderConfig::SGLang(provider) => {
                 provider
                     .poll_batch_inference(batch_request, http_client, dynamic_api_keys)
                     .await

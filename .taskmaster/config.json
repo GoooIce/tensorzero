@@ -2,19 +2,19 @@
   "models": {
     "main": {
       "provider": "openrouter",
-      "modelId": "mistralai/mistral-small-3.1-24b-instruct:free",
+      "modelId": "moonshotai/kimi-dev-72b:free",
       "maxTokens": 120000,
       "temperature": 0.2
     },
     "research": {
       "provider": "openrouter",
-      "modelId": "mistralai/mistral-small-3.1-24b-instruct:free",
+      "modelId": "moonshotai/kimi-dev-72b:free",
       "maxTokens": 8700,
       "temperature": 0.1
     },
     "fallback": {
       "provider": "openrouter",
-      "modelId": "mistralai/mistral-small-3.1-24b-instruct:free",
+      "modelId": "moonshotai/kimi-dev-72b:free",
       "maxTokens": 8192,
       "temperature": 0.1
     }

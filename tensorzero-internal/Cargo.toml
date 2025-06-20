@@ -111,6 +111,7 @@ google-cloud-auth = "0.20.0"
 mime = { workspace = true }
 mime_guess = "2.0.5"
 indexmap = "2.9.0"
+rust-proxy-core = { path = "../rust-proxy-core" }
 
 
 [dev-dependencies]

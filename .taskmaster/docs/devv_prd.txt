@@ -1,0 +1,60 @@
+# 将 rust_proxy 集成到 TensorZero 作为原生 AI 提供商 PRD
+
+## 项目概述
+将 `rust_proxy` 项目的功能集成到 `tensorzero` 框架中，使其成为一个原生的 AI 提供商。这将允许 `tensorzero` 用户通过标准的提供商配置，直接利用 `rust_proxy` 的签名和代理能力，访问其背后特定的 AI 服务。
+
+## 目标
+1.  **重构 `rust_proxy`**: 将其从一个独立的 Axum Web 服务重构为一个可复用的 Rust 库 (crate)。
+2.  **创建原生提供商**: 在 `tensorzero-internal` 中实现一个新的 `RustProxyProvider`，封装 `rust_proxy` 的核心逻辑。
+3.  **无缝集成**: 确保新的提供商与 `tensorzero` 现有的 `InferenceProvider` trait 和配置系统完全兼容。
+4.  **统一接口**: 用户可以通过 OpenAI 兼容的客户端接口与 `RustProxyProvider` 进行交互，就像与其他提供商一样。
+5.  **移除独立服务依赖**: 最终目标是消除运行独立 `rust_proxy` 服务的需求，将其功能内嵌到 `tensorzero` 中。
+
+## 技术要求
+
+### 核心功能
+1.  **`rust_proxy` 库化**:
+    -   提取核心逻辑（如 `DevApiClient`, `WasmSigner`, `sse_processor`）到一个独立的库中。
+    -   确保库的 API 清晰，易于被 `tensorzero` 调用。
+2.  **`RustProxyProvider` 实现**:
+    -   在 `tensorzero-internal/src/inference/providers/` 目录下创建 `rust_proxy.rs` (或类似名称)。
+    -   实现 `InferenceProvider` trait，处理聊天（Chat）和补全（Completions）请求。
+    -   处理流式（streaming）和非流式（non-streaming）响应的转换。
+3.  **配置集成**:
+    -   扩展 `tensorzero` 的配置，允许用户选择 `rust_proxy` 作为提供商，并传递必要的参数（如模型名称、API端点等）参考 @rust_proxy/src/dev_client.rs。
+4.  **错误处理**:
+    -   将 `rust_proxy` 内部的错误适当地映射到 `tensorzero` 的标准错误类型中。
+
+## 实现架构
+1.  **`rust_proxy` 重构**:
+    -   创建一个新的 `rust-proxy-core` crate，包含 `main.rs` 之外的核心业务逻辑。
+    -   废弃原有的 `rust_proxy` 项目。
+2.  **`tensorzero` 集成**:
+    -   在 `tensorzero-internal` 的 `Cargo.toml` 中添加对 `rust-proxy-core` 的依赖。
+    -   在 `tensorzero-internal/src/inference/providers/mod.rs` 中注册新的 `RustProxyProvider`。
+    -   `RustProxyProvider` 将会实例化 `rust_proxy_core` 中的客户端，并发起请求。
+
+## 技术栈
+-   保持与 `tensorzero` 现有技术栈一致：
+-   Rust
+-   Tokio (for async runtime)
+-   Reqwest (for HTTP client)
+-   Serde (for serialization/deserialization)
+-   Tracing (for logging)
+
+## 验收标准
+1.  能够通过 `tensorzero` 的配置文件将 `rust_proxy` 设置为激活的提供商。
+2.  可以通过 `tensorzero` 的客户端（如 Python client）成功向 `RustProxyProvider` 发起聊天请求。
+3.  流式和非流式响应均能被正确处理并返回给客户端。
+4.  `rust_proxy` 相关的错误能被正确捕获并以 `tensorzero` 标准格式返回。
+5.  有相应的集成测试，验证 `tensorzero` 到 `rust_proxy` 核心逻辑的调用链路。
+
+## 成功指标
+-   集成后，`tensorzero` 调用 `rust_proxy` 功能的性能损耗低于 5%。
+-   开发者可以在不了解 `rust_proxy` 内部实现的情况下，通过 `tensorzero` 的标准接口使用其功能。
+-   不再需要单独部署和维护 `rust_proxy` 服务进程。
+
+## 时间规划
+预计开发时间：1-2 周
+-   第 1 周：重构 `rust_proxy` 为库，并在 `tensorzero` 中完成基本集成和非流式 API 对接。
+-   第 2 周：实现流式响应处理、错误处理、编写集成测试和文档。 
