@@ -2,7 +2,7 @@ use crate::{utils, wasm_signer::WasmSigner};
 use anyhow::{anyhow, Context, Result};
 // use bytes::Bytes;
 use http::HeaderMap;
-use reqwest::{Client, Response, RequestBuilder};
+use reqwest::{Client, Response};
 use serde::{Deserialize, Serialize};
 use std::time::{SystemTime, UNIX_EPOCH};
 use tracing::{debug, instrument, info, error, warn};
@@ -10,9 +10,7 @@ use tracing::{debug, instrument, info, error, warn};
 // use futures_util::stream::{Stream, TryStreamExt};
 // use http::StatusCode;
 use std::env; // Import the env module
-use std::collections::HashMap;
 use std::str;
-use std::io;
 use futures_util::Stream;
 use bytes::Bytes;
 

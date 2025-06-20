@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tracing::warn;
 use crate::dev_client::DevRequestOptions; // Needed for model name
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use futures_util::stream::{self, Stream, StreamExt};
 use std::time::{SystemTime, UNIX_EPOCH};
 use tracing::{debug, info, error, trace};
