@@ -4,6 +4,13 @@ type = "chat"
 
 # ... and a variant is one of many implementations we can use to tackle it (a choice of prompt, model, etc.).
 # Since we only have one variant for this function, the gateway will always select it.
-[functions.generate_haiku.variants.deepseek_chat]
+[functions.generate_haiku.variants.rust_proxy]
 type = "chat_completion"
-model = "deepseek::deepseek-chat"
+model = "rust-proxy"
+
+# Configure the rust-proxy model
+[models.rust-proxy]
+routing = ["rust_proxy_provider"]
+
+[models.rust-proxy.providers.rust_proxy_provider]
+type = "rust-proxy" 

@@ -27,10 +27,10 @@ services:
     volumes:
       # Mount our tensorzero.toml file into the container
       - ./config:/app/config:ro
-    command: --config-file /app/config/tensorzero.toml
+    command: --config-file /app/config/tensorzero-openrouter.toml
     environment:
       TENSORZERO_CLICKHOUSE_URL: http://chuser:chpassword@clickhouse:8123/tensorzero
-      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:?Environment variable DEEPSEEK_API_KEY must be set.}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:?Environment variable OPENROUTER_API_KEY must be set.}
     ports:
       - "3000:3000"
     extra_hosts:
@@ -58,7 +58,7 @@ services:
       # Mount our tensorzero.toml file into the container
       - ./config:/app/config:ro
     environment:
-      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:?Environment variable DEEPSEEK_API_KEY must be set.}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:?Environment variable OPENROUTER_API_KEY must be set.}
       TENSORZERO_CLICKHOUSE_URL: http://chuser:chpassword@clickhouse:8123/tensorzero
       TENSORZERO_GATEWAY_URL: http://gateway:3000
     ports:
@@ -67,4 +67,4 @@ services:
       clickhouse:
         condition: service_healthy
       gateway:
-        condition: service_healthy
+        condition: service_healthy 
