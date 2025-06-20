@@ -654,6 +654,7 @@ impl ModelProvider {
             ProviderConfig::AWSBedrock(_) => "aws_bedrock",
             ProviderConfig::AWSSagemaker(_) => "aws_sagemaker",
             ProviderConfig::Azure(_) => "azure",
+            ProviderConfig::DeepSeek(_) => "deepseek",
             ProviderConfig::Fireworks(_) => "fireworks",
             ProviderConfig::GCPVertexAnthropic(_) => "gcp_vertex_anthropic",
             ProviderConfig::GCPVertexGemini(_) => "gcp_vertex_gemini",
@@ -680,6 +681,7 @@ impl ModelProvider {
             // SageMaker doesn't have a meaningful model name concept, as we just invoke an endpoint
             ProviderConfig::AWSSagemaker(_) => None,
             ProviderConfig::Azure(provider) => Some(provider.deployment_id()),
+            ProviderConfig::DeepSeek(provider) => Some(provider.model_name()),
             ProviderConfig::Fireworks(provider) => Some(provider.model_name()),
             ProviderConfig::GCPVertexAnthropic(provider) => Some(provider.model_id()),
             ProviderConfig::GCPVertexGemini(provider) => Some(provider.model_or_endpoint_id()),
@@ -691,7 +693,7 @@ impl ModelProvider {
             ProviderConfig::OpenRouter(provider) => Some(provider.model_name()),
             ProviderConfig::RustProxy(_) => None,
             ProviderConfig::SGLang(provider) => Some(provider.model_name()),
-            ProviderConfig::TGI(provider) => Some(provider.model_name()),
+            ProviderConfig::TGI(provider) => provider.model_name(),
             ProviderConfig::Together(provider) => Some(provider.model_name()),
             ProviderConfig::VLLM(provider) => Some(provider.model_name()),
             ProviderConfig::XAI(provider) => Some(provider.model_name()),
@@ -924,7 +926,7 @@ impl UninitializedProviderConfig {
                     match hosted_provider {
                         HostedProviderKind::OpenAI => Box::new(OpenAIProvider::new(
                             model_name,
-                            api_base,
+                            Some(api_base),
                             api_key_location,
                         )?),
                         HostedProviderKind::TGI => Box::new(TGIProvider::new(

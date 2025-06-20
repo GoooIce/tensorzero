@@ -81,6 +81,12 @@ impl TGIProvider {
             credentials,
         })
     }
+
+    /// TGI provider doesn't use a traditional model name concept
+    /// Instead, the model is determined by the endpoint configuration
+    pub fn model_name(&self) -> Option<&str> {
+        None
+    }
 }
 
 #[derive(Clone, Debug)]
