@@ -96,6 +96,12 @@ const getProviderInfo = (
         className:
           "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
       };
+    case "rust-proxy":
+      return {
+        name: "Rust Proxy",
+        className:
+          "bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-300",
+      };
     case "together":
       return {
         name: "Together",

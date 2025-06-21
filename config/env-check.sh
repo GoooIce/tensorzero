@@ -37,17 +37,16 @@ echo ""
 echo "🤖 AI Provider API Keys:"
 check_env_var "DEEPSEEK_API_KEY" false
 check_env_var "OPENROUTER_API_KEY" false
-check_env_var "OPENAI_API_KEY" false
 
 echo ""
 echo "================================================"
 
 # Check if at least one AI provider is configured
-if [ -n "$DEEPSEEK_API_KEY" ] || [ -n "$OPENROUTER_API_KEY" ] || [ -n "$OPENAI_API_KEY" ]; then
+if [ -n "$DEEPSEEK_API_KEY" ] || [ -n "$OPENROUTER_API_KEY" ]; then
     echo "✅ At least one AI provider is configured"
 else
     echo "❌ No AI provider API keys are set!"
-    echo "   Please set at least one of: DEEPSEEK_API_KEY, OPENROUTER_API_KEY, or OPENAI_API_KEY"
+    echo "   Please set at least one of: DEEPSEEK_API_KEY or OPENROUTER_API_KEY"
 fi
 
 # Check if all required DevV variables are set

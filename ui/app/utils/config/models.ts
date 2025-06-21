@@ -158,6 +158,12 @@ export const XAIProviderConfigSchema = z.object({
 });
 export type XAIProviderConfig = z.infer<typeof XAIProviderConfigSchema>;
 
+export const RustProxyProviderConfigSchema = z.object({
+  type: z.literal("rust-proxy"),
+  model_name: z.string(),
+});
+export type RustProxyProviderConfig = z.infer<typeof RustProxyProviderConfigSchema>;
+
 // Union of all provider configs
 export const ProviderConfigSchema = z.discriminatedUnion("type", [
   AnthropicProviderConfigSchema,
@@ -175,6 +181,7 @@ export const ProviderConfigSchema = z.discriminatedUnion("type", [
   MistralProviderConfigSchema,
   OpenAIProviderConfigSchema,
   OpenRouterProviderConfigSchema,
+  RustProxyProviderConfigSchema,
   SGLangProviderConfigSchema,
   TGIProviderConfigSchema,
   TogetherProviderConfigSchema,
@@ -198,6 +205,7 @@ export function createProviderConfig(
     case "google_ai_studio_gemini":
     case "openai":
     case "openrouter":
+    case "rust-proxy":
       return { type, model_name };
     case "aws_bedrock":
       return { type, model_id: model_name };

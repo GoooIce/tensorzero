@@ -37,8 +37,6 @@ services:
       # AI Provider API Keys
       - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
-      # Optional OpenAI API Key (fallback)
-      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
     ports:
       - "3000:3000"
     extra_hosts:
@@ -60,8 +58,6 @@ services:
       # AI Provider API Keys
       - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
-      # Optional OpenAI API Key (fallback)
-      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       # TensorZero infrastructure
       - TENSORZERO_CLICKHOUSE_URL=http://chuser:chpassword@clickhouse:8123/tensorzero
       - TENSORZERO_GATEWAY_URL=http://gateway:3000

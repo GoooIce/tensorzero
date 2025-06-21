@@ -1,10 +1,6 @@
 # TensorZero Configuration with Environment Variables
 # This configuration uses environment variables for sensitive data
-
-# Database configuration
-# Using ClickHouse for better performance and analytics
-[database]
-url = "clickhouse://chuser:chpassword@clickhouse:8123/tensorzero"
+# Database is configured via TENSORZERO_CLICKHOUSE_URL environment variable
 
 # Gateway server configuration
 [gateway]
@@ -13,36 +9,13 @@ bind = "0.0.0.0:3000"
 # Model configuration using environment variables
 [models]
 
-# RustProxy (DevV) models using your environment variables
-[models.claude-3-5-sonnet]
-routing = ["devv-rustproxy"]
-
-[models.claude-3-5-sonnet.providers.devv-rustproxy]
-type = "rust-proxy"
-model_name = "claude-3.5-sonnet-20241022"
-device_id_location = "env::DEVICE_ID"
-session_id_location = "env::SID"
-api_endpoint = "env::API_ENDPOINT"
-
+# RustProxy model for DevV AI
 [models.claude-3-5-haiku]
 routing = ["devv-rustproxy"]
 
 [models.claude-3-5-haiku.providers.devv-rustproxy]
 type = "rust-proxy"
-model_name = "claude-3.5-haiku-20241022"
-device_id_location = "env::DEVICE_ID"
-session_id_location = "env::SID"
-api_endpoint = "env::API_ENDPOINT"
-
-[models.gpt-4o-mini]
-routing = ["devv-rustproxy"]
-
-[models.gpt-4o-mini.providers.devv-rustproxy]
-type = "rust-proxy"
-model_name = "gpt-4o-mini"
-device_id_location = "env::DEVICE_ID"
-session_id_location = "env::SID"
-api_endpoint = "env::API_ENDPOINT"
+model_name = "claude-3.5-haiku"
 
 # DeepSeek models using your API key
 [models.deepseek-chat]
@@ -78,11 +51,15 @@ type = "openrouter"
 model_name = "openai/gpt-4o"
 api_key_location = "env::OPENROUTER_API_KEY"
 
-# Fallback OpenAI model (if you have OpenAI API key)
-# [models.gpt-4o]
-# routing = ["openai"]
+# Function definitions
+[functions]
 
-# [models.gpt-4o.providers.openai]
-# type = "openai"
-# model_name = "gpt-4o"
-# api_key_location = "env::OPENAI_API_KEY" 
+[functions.basic_chat]
+type = "chat"
+
+[functions.basic_chat.variants.claude_variant]
+type = "chat_completion"
+model = "claude-3-5-haiku"
+weight = 1.0
+
+ 

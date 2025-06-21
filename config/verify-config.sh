@@ -7,13 +7,11 @@ echo "======================"
 if [ -f "config/tensorzero.toml" ]; then
     echo "✅ 配置文件存在: config/tensorzero.toml"
     
-    # 检查数据库配置
-    if grep -q "clickhouse://" config/tensorzero.toml; then
-        echo "✅ 数据库配置: ClickHouse (推荐)"
-    elif grep -q "sqlite://" config/tensorzero.toml; then
-        echo "⚠️  数据库配置: SQLite (仅开发用)"
+    # 检查数据库配置 (现在通过环境变量)
+    if grep -q "TENSORZERO_CLICKHOUSE_URL" docker-compose.yml; then
+        echo "✅ 数据库配置: ClickHouse (通过环境变量)"
     else
-        echo "❌ 数据库配置: 未找到或无效"
+        echo "⚠️  数据库配置: 未在Docker Compose中找到"
     fi
     
     # 检查模型配置
