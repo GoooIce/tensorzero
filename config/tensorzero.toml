@@ -1,0 +1,88 @@
+# TensorZero Configuration with Environment Variables
+# This configuration uses environment variables for sensitive data
+
+# Database configuration
+# Using ClickHouse for better performance and analytics
+[database]
+url = "clickhouse://chuser:chpassword@clickhouse:8123/tensorzero"
+
+# Gateway server configuration
+[gateway]
+bind = "0.0.0.0:3000"
+
+# Model configuration using environment variables
+[models]
+
+# RustProxy (DevV) models using your environment variables
+[models.claude-3-5-sonnet]
+routing = ["devv-rustproxy"]
+
+[models.claude-3-5-sonnet.providers.devv-rustproxy]
+type = "rust-proxy"
+model_name = "claude-3.5-sonnet-20241022"
+device_id_location = "env::DEVICE_ID"
+session_id_location = "env::SID"
+api_endpoint = "env::API_ENDPOINT"
+
+[models.claude-3-5-haiku]
+routing = ["devv-rustproxy"]
+
+[models.claude-3-5-haiku.providers.devv-rustproxy]
+type = "rust-proxy"
+model_name = "claude-3.5-haiku-20241022"
+device_id_location = "env::DEVICE_ID"
+session_id_location = "env::SID"
+api_endpoint = "env::API_ENDPOINT"
+
+[models.gpt-4o-mini]
+routing = ["devv-rustproxy"]
+
+[models.gpt-4o-mini.providers.devv-rustproxy]
+type = "rust-proxy"
+model_name = "gpt-4o-mini"
+device_id_location = "env::DEVICE_ID"
+session_id_location = "env::SID"
+api_endpoint = "env::API_ENDPOINT"
+
+# DeepSeek models using your API key
+[models.deepseek-chat]
+routing = ["deepseek"]
+
+[models.deepseek-chat.providers.deepseek]
+type = "deepseek"
+model_name = "deepseek-chat"
+api_key_location = "env::DEEPSEEK_API_KEY"
+
+[models.deepseek-coder]
+routing = ["deepseek"]
+
+[models.deepseek-coder.providers.deepseek]
+type = "deepseek"
+model_name = "deepseek-coder"
+api_key_location = "env::DEEPSEEK_API_KEY"
+
+# OpenRouter models using your API key
+[models.openrouter-claude]
+routing = ["openrouter"]
+
+[models.openrouter-claude.providers.openrouter]
+type = "openrouter"
+model_name = "anthropic/claude-3.5-sonnet"
+api_key_location = "env::OPENROUTER_API_KEY"
+
+[models.openrouter-gpt4]
+routing = ["openrouter"]
+
+[models.openrouter-gpt4.providers.openrouter]
+type = "openrouter"
+model_name = "openai/gpt-4o"
+api_key_location = "env::OPENROUTER_API_KEY"
+
+# Fallback OpenAI model (if you have OpenAI API key)
+# [models.gpt-4o]
+# routing = ["openai"]
+
+# [models.gpt-4o.providers.openai]
+# type = "openai"
+# model_name = "gpt-4o"
+# api_key_location = "env::OPENAI_API_KEY" 

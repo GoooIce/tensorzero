@@ -684,6 +684,8 @@ impl ModelProvider {
             ProviderConfig::Together(_) => "together",
             ProviderConfig::VLLM(_) => "vllm",
             ProviderConfig::XAI(_) => "xai",
+            #[cfg(any(test, feature = "e2e_tests"))]
+            ProviderConfig::Dummy(_) => "dummy",
         }
     }
 
@@ -711,6 +713,8 @@ impl ModelProvider {
             ProviderConfig::Together(provider) => Some(provider.model_name()),
             ProviderConfig::VLLM(provider) => Some(provider.model_name()),
             ProviderConfig::XAI(provider) => Some(provider.model_name()),
+            #[cfg(any(test, feature = "e2e_tests"))]
+            ProviderConfig::Dummy(provider) => Some(provider.model_name()),
         }
     }
 }
@@ -754,6 +758,8 @@ pub enum ProviderConfig {
     Together(TogetherProvider),
     VLLM(VLLMProvider),
     XAI(XAIProvider),
+    #[cfg(any(test, feature = "e2e_tests"))]
+    Dummy(DummyProvider),
 }
 
 /// Contains all providers which implement `SelfHostedProvider` - these providers
@@ -860,8 +866,8 @@ pub(super) enum UninitializedProviderConfig {
     RustProxy {
         model_name: String,
         api_key_location: Option<CredentialLocation>,
-        device_id: Option<String>,
-        session_id: Option<String>,
+        device_id_location: Option<CredentialLocation>,
+        session_id_location: Option<CredentialLocation>,
         api_endpoint: Option<String>,
         os_type: Option<String>,
         accept_language: Option<String>,
@@ -1055,8 +1061,8 @@ impl UninitializedProviderConfig {
             UninitializedProviderConfig::RustProxy {
                 model_name,
                 api_key_location,
-                device_id,
-                session_id,
+                device_id_location,
+                session_id_location,
                 api_endpoint,
                 os_type,
                 accept_language,
@@ -1065,8 +1071,8 @@ impl UninitializedProviderConfig {
                 ProviderConfig::RustProxy(RustProxyProvider::new(
                     model_name,
                     api_key_location,
-                    device_id,
-                    session_id,
+                    device_id_location,
+                    session_id_location,
                     api_endpoint,
                     os_type,
                     accept_language,
@@ -1187,11 +1193,11 @@ impl ModelProvider {
             }
             ProviderConfig::VLLM(provider) => provider.infer(request, client, api_keys, self).await,
             ProviderConfig::XAI(provider) => provider.infer(request, client, api_keys, self).await,
-            ProviderConfig::DeepSeek(provider) => {
-                provider.infer(request, client, api_keys, self).await
-            }
             #[cfg(any(test, feature = "e2e_tests"))]
             ProviderConfig::Dummy(provider) => {
+                provider.infer(request, client, api_keys, self).await
+            }
+            ProviderConfig::DeepSeek(provider) => {
                 provider.infer(request, client, api_keys, self).await
             }
         }

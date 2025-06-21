@@ -1,0 +1,88 @@
+# TensorZero Configuration Example with Environment Variables for RustProxy
+# This example demonstrates how to configure the RustProxy provider using
+# environment variables for sensitive configuration options.
+
+# Database configuration
+[database]
+url = "sqlite://dev.db"
+
+# Gateway server configuration
+[gateway]
+bind = "127.0.0.1:3000"
+
+# Model configuration with environment variable support
+[models]
+
+# Example 1: Using environment variables for device_id and session_id
+[models.claude-3-5-sonnet-20241022-env]
+routing = ["rustproxy-with-env"]
+
+[models.claude-3-5-sonnet-20241022-env.providers.rustproxy-with-env]
+type = "rust-proxy"
+model_name = "claude-3.5-sonnet-20241022"
+# Device ID from environment variable
+device_id_location = "env::RUSTPROXY_DEVICE_ID"
+# Session ID from environment variable  
+session_id_location = "env::RUSTPROXY_SESSION_ID"
+# Optional: Custom API endpoint
+api_endpoint = "https://api.devv.ai/api/v1/stream/chat"
+# Optional: OS type
+os_type = "3"
+# Optional: Language preference
+accept_language = "en"
+
+# Optional model filtering
+[models.claude-3-5-sonnet-20241022-env.providers.rustproxy-with-env.model_filter]
+# Only include base and premium model types
+include_types = ["base", "premium"]
+# Exclude free trial models
+exclude_types = ["freeTrial"]
+# Only models with at least 10 uses remaining
+min_usage_left = 10
+
+# Example 2: Mixed configuration (some env vars, some direct values)
+[models.claude-3-5-haiku-20241022-mixed]
+routing = ["rustproxy-mixed"]
+
+[models.claude-3-5-haiku-20241022-mixed.providers.rustproxy-mixed]
+type = "rust-proxy"
+model_name = "claude-3.5-haiku-20241022"
+# Device ID from environment variable
+device_id_location = "env::DEVICE_ID"
+# Session ID as direct value (not recommended for production)
+session_id_location = "direct-session-123"
+# API endpoint from environment variable
+api_endpoint = "https://api.devv.ai/api/v1/stream/chat"
+
+# Example 3: File-based credentials
+[models.gpt-4o-mini-file]
+routing = ["rustproxy-file"]
+
+[models.gpt-4o-mini-file.providers.rustproxy-file]
+type = "rust-proxy"
+model_name = "gpt-4o-mini"
+# Device ID from file path specified in environment variable
+device_id_location = "path_from_env::DEVICE_ID_FILE_PATH"
+# Session ID from direct file path
+session_id_location = "path::/etc/tensorzero/session_id"
+
+# Example 4: Default configuration (no environment variables)
+[models.claude-3-haiku-20240307-default]
+routing = ["rustproxy-default"]
+
+[models.claude-3-haiku-20240307-default.providers.rustproxy-default]
+type = "rust-proxy"
+model_name = "claude-3-haiku-20240307"
+# No device_id_location or session_id_location specified
+# Will use default values
+
+# Environment Variables to set:
+# 
+# export RUSTPROXY_DEVICE_ID="your-device-id-here"
+# export RUSTPROXY_SESSION_ID="your-session-id-here" 
+# export DEVICE_ID="another-device-id"
+# export DEVICE_ID_FILE_PATH="/path/to/device_id_file"
+#
+# Or create files:
+# echo "your-device-id" > /etc/tensorzero/device_id
+# echo "your-session-id" > /etc/tensorzero/session_id 

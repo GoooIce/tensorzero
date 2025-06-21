@@ -106,14 +106,51 @@ impl std::fmt::Debug for RustProxyProvider {
 }
 
 impl RustProxyProvider {
+    /// Helper method to resolve a CredentialLocation to a plain string value.
+    /// 
+    /// This method handles environment variable resolution and other credential
+    /// location types, returning a plain string that can be used directly.
+    /// 
+    /// # Arguments
+    /// 
+    /// * `location` - The credential location to resolve
+    /// * `provider_type` - The provider type string for error reporting
+    /// 
+    /// # Returns
+    /// 
+    /// Returns a `Result<String, Error>` with the resolved string value or an error
+    /// if the credential cannot be resolved.
+         fn resolve_credential_to_string(
+        location: crate::model::CredentialLocation, 
+        provider_type: &str
+    ) -> Result<String, Error> {
+        use crate::model::{Credential, CredentialLocation};
+        use secrecy::ExposeSecret;
+        
+        let credential = Credential::try_from((location, provider_type))?;
+        
+        match credential {
+            Credential::Static(secret) => Ok(secret.expose_secret().to_string()),
+            Credential::FileContents(secret) => Ok(secret.expose_secret().to_string()),
+            Credential::Dynamic(value) => Ok(value),
+            Credential::None => Ok("".to_string()),
+            Credential::Missing => Err(Error::new(ErrorDetails::Config {
+                message: format!("Missing credential for {}", provider_type),
+            })),
+            Credential::Sdk => Err(Error::new(ErrorDetails::Config {
+                message: format!("SDK credentials not supported for {} device_id/session_id", provider_type),
+            })),
+        }
+    }
+
     /// Creates a new RustProxyProvider instance.
     /// 
     /// # Arguments
     /// 
     /// * `model_name` - The name of the model to use for inference requests
     /// * `_api_key_location` - Optional API key location (currently unused)
-    /// * `device_id` - Optional device identifier for requests
-    /// * `session_id` - Optional session identifier for requests  
+    /// * `device_id_location` - Optional device identifier location (can be env var or direct value)
+    /// * `session_id_location` - Optional session identifier location (can be env var or direct value)  
     /// * `api_endpoint` - Optional API endpoint URL (defaults to hardcoded value)
     /// * `os_type` - Optional OS type identifier (defaults to "3")
     /// * `accept_language` - Optional language preference (defaults to "en")
@@ -127,11 +164,13 @@ impl RustProxyProvider {
     /// # Example
     /// 
     /// ```rust,ignore
+    /// use crate::model::CredentialLocation;
+    /// 
     /// let provider = RustProxyProvider::new(
     ///     "claude-3.5-sonnet".to_string(),
     ///     None,
-    ///     Some("device123".to_string()),
-    ///     Some("session456".to_string()),
+    ///     Some(CredentialLocation::Env("DEVICE_ID".to_string())),
+    ///     Some(CredentialLocation::Env("SESSION_ID".to_string())),
     ///     Some("https://api.devv.ai/api/v1/stream/chat".to_string()),
     ///     Some("3".to_string()),
     ///     Some("en".to_string()),
@@ -141,24 +180,34 @@ impl RustProxyProvider {
     pub fn new(
         model_name: String,
         _api_key_location: Option<crate::model::CredentialLocation>,
-        device_id: Option<String>,
-        session_id: Option<String>,
+        device_id_location: Option<crate::model::CredentialLocation>,
+        session_id_location: Option<crate::model::CredentialLocation>,
         api_endpoint: Option<String>,
         os_type: Option<String>,
-        accept_language: Option<String>,
+        _accept_language: Option<String>,
         model_filter: Option<crate::model::RustProxyModelFilter>,
     ) -> Result<Self, Error> {
         // Use provided configuration or defaults
         let api_endpoint = api_endpoint.unwrap_or_else(|| 
             "https://api.devv.ai/api/v1/stream/chat".to_string()
         );
-        let device_id = device_id.unwrap_or_else(|| 
-            "default-device-id".to_string()
-        );
         let os_type = os_type.unwrap_or_else(|| "3".to_string());
-        let session_id = session_id.unwrap_or_else(|| 
+
+        // Resolve device_id from credential location or use default
+        let device_id = if let Some(location) = device_id_location {
+            Self::resolve_credential_to_string(location, PROVIDER_TYPE)
+                .unwrap_or_else(|_| "default-device-id".to_string())
+        } else {
+            "default-device-id".to_string()
+        };
+
+        // Resolve session_id from credential location or use default
+        let session_id = if let Some(location) = session_id_location {
+            Self::resolve_credential_to_string(location, PROVIDER_TYPE)
+                .unwrap_or_else(|_| "default-session-id".to_string())
+        } else {
             "default-session-id".to_string()
-        );
+        };
 
         let client = DevApiClient::with_config(api_endpoint, device_id, os_type, session_id)
             .map_err(|e| Error::new(ErrorDetails::InferenceClient { 
