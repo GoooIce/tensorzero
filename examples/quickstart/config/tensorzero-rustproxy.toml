@@ -8,9 +8,24 @@ type = "chat"
 type = "chat_completion"
 model = "rust-proxy"
 
-# Configure the rust-proxy model
+# Configure the rust-proxy model with comprehensive options
 [models.rust-proxy]
 routing = ["rust_proxy_provider"]
 
 [models.rust-proxy.providers.rust_proxy_provider]
-type = "rust-proxy" 
+type = "rust-proxy"
+model_name = "claude-3.5-sonnet"
+
+# API Configuration (optional - defaults will be used if not specified)
+api_endpoint = "https://api.devv.ai/api/v1/stream/chat"
+device_id = "your-device-id-here"
+session_id = "your-session-id-here"
+os_type = "3"
+accept_language = "en"
+
+# Model filtering options (optional)
+[models.rust-proxy.providers.rust_proxy_provider.model_filter]
+include_types = ["base", "freeTrial"]  # Only include free models
+# exclude_types = ["premium"]         # Uncomment to exclude premium models
+min_usage_left = 5                    # Minimum usage count required
+only_new = false                      # Set to true to only show new models 

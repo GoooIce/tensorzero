@@ -58,6 +58,20 @@ use crate::{
 };
 use serde::Deserialize;
 
+/// Configuration for filtering models in RustProxy provider
+#[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct RustProxyModelFilter {
+    /// Only include models of specific types (base, freeTrial, premium)
+    pub include_types: Option<Vec<String>>,
+    /// Exclude models of specific types
+    pub exclude_types: Option<Vec<String>>,
+    /// Only include models with usage_left greater than this value
+    pub min_usage_left: Option<u32>,
+    /// Only include new models (when is_new = true)
+    pub only_new: Option<bool>,
+}
+
 #[derive(Debug)]
 pub struct ModelConfig {
     pub routing: Vec<Arc<str>>, // [provider name A, provider name B, ...]
@@ -691,7 +705,7 @@ impl ModelProvider {
             ProviderConfig::Mistral(provider) => Some(provider.model_name()),
             ProviderConfig::OpenAI(provider) => Some(provider.model_name()),
             ProviderConfig::OpenRouter(provider) => Some(provider.model_name()),
-            ProviderConfig::RustProxy(_) => None,
+            ProviderConfig::RustProxy(provider) => Some(provider.model_name()),
             ProviderConfig::SGLang(provider) => Some(provider.model_name()),
             ProviderConfig::TGI(provider) => provider.model_name(),
             ProviderConfig::Together(provider) => Some(provider.model_name()),
@@ -843,7 +857,16 @@ pub(super) enum UninitializedProviderConfig {
     },
     #[strum(serialize = "rust-proxy")]
     #[serde(rename = "rust-proxy")]
-    RustProxy {},
+    RustProxy {
+        model_name: String,
+        api_key_location: Option<CredentialLocation>,
+        device_id: Option<String>,
+        session_id: Option<String>,
+        api_endpoint: Option<String>,
+        os_type: Option<String>,
+        accept_language: Option<String>,
+        model_filter: Option<RustProxyModelFilter>,
+    },
     Together {
         model_name: String,
         api_key_location: Option<CredentialLocation>,
@@ -1029,8 +1052,26 @@ impl UninitializedProviderConfig {
                 model_name,
                 api_key_location,
             } => ProviderConfig::OpenRouter(OpenRouterProvider::new(model_name, api_key_location)?),
-            UninitializedProviderConfig::RustProxy {} => {
-                ProviderConfig::RustProxy(RustProxyProvider::new()?)
+            UninitializedProviderConfig::RustProxy {
+                model_name,
+                api_key_location,
+                device_id,
+                session_id,
+                api_endpoint,
+                os_type,
+                accept_language,
+                model_filter,
+            } => {
+                ProviderConfig::RustProxy(RustProxyProvider::new(
+                    model_name,
+                    api_key_location,
+                    device_id,
+                    session_id,
+                    api_endpoint,
+                    os_type,
+                    accept_language,
+                    model_filter,
+                )?)
             }
             UninitializedProviderConfig::Together {
                 model_name,

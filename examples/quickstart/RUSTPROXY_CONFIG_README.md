@@ -1,45 +1,78 @@
 # RustProxy 配置详细指南
 
-RustProxy 是 TensorZero 的内置代理提供商，它实际上是一个开发者 API 客户端的代理。根据代码分析，RustProxy 需要以下额外配置：
+RustProxy 是 TensorZero 的内置代理提供商，集成了 DevV AI 服务，支持动态模型发现、智能过滤和完整的配置管理。
 
-## 🔧 必需的环境变量
+## 🚀 新版本配置（推荐）
 
-RustProxy 依赖于 `DevApiClient`，需要以下环境变量：
+### TensorZero 原生配置
 
-### 1. API 端点配置
-```bash
-export API_ENDPOINT="https://your-dev-api-endpoint.com"
+现在可以直接在 TensorZero 配置文件中完整配置 RustProxy，无需依赖环境变量：
+
+```toml
+[models.rust-proxy.providers.rust_proxy_provider]
+type = "rust-proxy"
+model_name = "claude-3.5-sonnet"
+
+# API 配置（可选 - 未指定时使用默认值）
+api_endpoint = "https://api.devv.ai/api/v1/stream/chat"
+device_id = "your-device-id"
+session_id = "your-session-id"
+os_type = "3"
+accept_language = "en"
+
+# 模型过滤选项（可选）
+[models.rust-proxy.providers.rust_proxy_provider.model_filter]
+include_types = ["base", "freeTrial"]  # 只包含免费模型
+exclude_types = ["premium"]            # 排除付费模型
+min_usage_left = 10                    # 最少使用次数
+only_new = false                       # 是否只显示新模型
 ```
-- **说明**: 指向实际的开发者 API 服务端点
-- **默认值**: `"https://xxx"` (需要替换为真实端点)
 
-### 2. 设备 ID
-```bash
-export DEVICE_ID="your-device-identifier"
-```
-- **说明**: 设备唯一标识符，用于 API 认证
-- **默认值**: `"xxxx"` (需要替换为真实设备 ID)
+### 🎯 配置选项详解
 
-### 3. 操作系统类型
-```bash
-export OS_TYPE="3"
-```
-- **说明**: 操作系统类型标识符
-- **默认值**: `"3"`
+#### 必需配置
+- **`model_name`**: 要使用的模型名称，支持友好名称映射：
+  - `"claude-3.5-sonnet"` → `"us.anthropic.claude-3-7-sonnet-20250219-v1:0"`
+  - `"gpt-4.1"` → `"gpt-4.1"`
+  - `"gemini-2.0-flash"` → `"gemini-2.0-flash-001"`
+  - 或直接使用 DevV API 模型标识符
 
-### 4. 会话 ID
-```bash
-export SID="your-session-id"
-```
-- **说明**: 会话标识符
-- **默认值**: `"sid"` (需要替换为真实会话 ID)
+#### API 配置（可选）
+- **`api_endpoint`**: API 端点 URL（默认：DevV API 端点）
+- **`device_id`**: 设备标识符（默认：auto-generated）
+- **`session_id`**: 会话标识符（默认：auto-generated）
+- **`os_type`**: 操作系统类型（默认：`"3"`）
+- **`accept_language`**: 语言偏好（默认：`"en"`）
+
+#### 模型过滤器（可选）
+- **`include_types`**: 包含的模型类型列表 `["base", "freeTrial", "premium"]`
+- **`exclude_types`**: 排除的模型类型列表
+- **`min_usage_left`**: 最小剩余使用次数
+- **`only_new`**: 是否只显示新模型（`true`/`false`）
+
+## 🔧 高级功能
+
+### 1. 动态模型发现
+RustProxy 会自动从 DevV API 获取可用模型列表：
+- 实时模型信息
+- 使用限制检查
+- 智能缓存机制
+
+### 2. 模型验证
+- 推理前自动验证模型可用性
+- 基于模型类型的差异化验证
+- 缓存验证结果提升性能
+
+### 3. 智能模型映射
+- 友好的 TensorZero 模型名称
+- 自动映射到 DevV API 标识符
+- 支持多种模型别名
 
 ## 📝 Docker Compose 配置
 
-创建一个使用 RustProxy 的 `docker-compose-rustproxy.yml`：
+### 新版本配置（推荐）
 
 ```yaml
-# This is a simplified example for learning purposes. Do not use this in production.
 services:
   clickhouse:
     image: clickhouse/clickhouse-server:24.12-alpine
@@ -62,25 +95,13 @@ services:
     command: --config-file /app/config/tensorzero-rustproxy.toml
     environment:
       TENSORZERO_CLICKHOUSE_URL: http://chuser:chpassword@clickhouse:8123/tensorzero
-      # RustProxy 所需的环境变量
-      API_ENDPOINT: ${API_ENDPOINT:?Environment variable API_ENDPOINT must be set.}
-      DEVICE_ID: ${DEVICE_ID:?Environment variable DEVICE_ID must be set.}
-      OS_TYPE: ${OS_TYPE:-3}
-      SID: ${SID:?Environment variable SID must be set.}
+      # 无需额外的 RustProxy 环境变量 - 全部在配置文件中
     ports:
       - "3000:3000"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--no-verbose",
-          "--tries=1",
-          "--spider",
-          "http://localhost:3000/health",
-        ]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
       start_period: 1s
       start_interval: 1s
       timeout: 1s
@@ -93,11 +114,6 @@ services:
     volumes:
       - ./config:/app/config:ro
     environment:
-      # UI 也需要相同的环境变量
-      API_ENDPOINT: ${API_ENDPOINT:?Environment variable API_ENDPOINT must be set.}
-      DEVICE_ID: ${DEVICE_ID:?Environment variable DEVICE_ID must be set.}
-      OS_TYPE: ${OS_TYPE:-3}
-      SID: ${SID:?Environment variable SID must be set.}
       TENSORZERO_CLICKHOUSE_URL: http://chuser:chpassword@clickhouse:8123/tensorzero
       TENSORZERO_GATEWAY_URL: http://gateway:3000
     ports:
@@ -109,83 +125,124 @@ services:
         condition: service_healthy
 ```
 
-## 🔐 WASM 签名器依赖
-
-RustProxy 使用 WASM 签名器进行请求认证：
-
-### 1. WASM 文件
-- **位置**: `rust_proxy/sign_bg.wasm`
-- **作用**: 生成请求签名，用于 API 认证
-
-### 2. 签名参数
-RustProxy 会自动生成以下参数用于签名：
-- `nonce`: UUID v4 格式的随机数
-- `timestamp`: Unix 时间戳
-- `device_id`: 来自环境变量
-- `content`: 请求内容
-
-## 📊 功能特性
-
-### ✅ 支持的功能
-- **非流式推理**: 完全支持
-- **消息转换**: 自动将 TensorZero 消息格式转换为开发者 API 格式
-- **错误处理**: 完整的错误处理和日志记录
-
-### ❌ 暂不支持的功能
-- **流式推理**: 由于 Rust 生命周期复杂性暂时禁用（基础设施已就绪）
-- **批量推理**: 不支持批量推理操作
-
 ## 🚀 运行步骤
 
-1. **设置环境变量**:
-```bash
-export API_ENDPOINT="你的真实API端点"
-export DEVICE_ID="你的设备ID"
-export OS_TYPE="3"
-export SID="你的会话ID"
+### 1. 配置文件设置
+更新 `config/tensorzero-rustproxy.toml` 中的认证信息：
+
+```toml
+[models.rust-proxy.providers.rust_proxy_provider]
+type = "rust-proxy"
+model_name = "claude-3.5-sonnet"
+device_id = "你的真实设备ID"
+session_id = "你的真实会话ID"
 ```
 
-2. **启动服务**:
+### 2. 启动服务
 ```bash
 cd tensorzero/examples/quickstart
 docker-compose -f docker-compose-rustproxy.yml up -d
 ```
 
-3. **验证服务**:
+### 3. 验证服务
 ```bash
 # 检查日志
-docker-compose -f docker-compose-rustproxy.yml logs -f
+docker-compose -f docker-compose-rustproxy.yml logs -f gateway
 
 # 测试 API
 curl -X POST http://localhost:3000/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "rust-proxy",
-    "messages": [{"role": "user", "content": "Hello, world!"}]
+    "messages": [{"role": "user", "content": "生成一首俳句"}]
   }'
 ```
 
-## ⚠️ 注意事项
+## 📊 功能特性
 
-1. **API 端点**: 必须提供真实可用的开发者 API 端点
-2. **认证信息**: 设备 ID 和会话 ID 必须是有效的认证凭据
-3. **网络连接**: 确保容器可以访问配置的 API 端点
-4. **WASM 依赖**: 确保 `sign_bg.wasm` 文件存在且可访问
+### ✅ 完全支持的功能
+- **非流式推理**: 完全支持，包含错误处理
+- **动态模型发现**: 自动获取可用模型列表
+- **模型验证**: 推理前验证模型可用性
+- **智能过滤**: 基于类型、使用限制等过滤模型
+- **消息转换**: 自动格式转换
+- **配置管理**: 原生 TensorZero 配置支持
+
+### 🚧 开发中的功能
+- **流式推理**: 基础设施就绪，正在完善中
+- **批量推理**: 计划中的功能
+
+## 💡 配置示例
+
+### 基础配置
+```toml
+[models.rust-proxy.providers.rust_proxy_provider]
+type = "rust-proxy"
+model_name = "claude-3.5-sonnet"
+device_id = "device-123"
+session_id = "session-456"
+```
+
+### 高级配置（包含过滤）
+```toml
+[models.rust-proxy.providers.rust_proxy_provider]
+type = "rust-proxy"
+model_name = "claude-3.5-sonnet"
+api_endpoint = "https://api.devv.ai/api/v1/stream/chat"
+device_id = "device-123"
+session_id = "session-456"
+os_type = "3"
+accept_language = "zh-CN"
+
+[models.rust-proxy.providers.rust_proxy_provider.model_filter]
+include_types = ["base", "freeTrial"]
+min_usage_left = 5
+only_new = false
+```
+
+## 🔄 向后兼容性
+
+### 环境变量支持（已弃用，但仍可用）
+
+如果需要使用旧的环境变量方式，仍然支持：
+
+```bash
+export API_ENDPOINT="https://api.devv.ai/api/v1/stream/chat"
+export DEVICE_ID="your-device-identifier"
+export OS_TYPE="3"
+export SID="your-session-id"
+```
+
+**注意**: 推荐使用新的 TensorZero 配置方式，环境变量方式将在未来版本中移除。
+
+## ⚠️ 重要说明
+
+1. **认证信息**: `device_id` 和 `session_id` 必须是有效的 DevV AI 认证凭据
+2. **网络连接**: 确保可以访问 DevV AI API 端点
+3. **模型可用性**: 会自动验证模型可用性和使用限制
+4. **缓存机制**: 模型信息会被缓存以提升性能
 
 ## 🔍 故障排除
 
 ### 常见错误
-1. **"Failed to create DevApiClient"**: 检查环境变量是否正确设置
-2. **"Request failed"**: 验证 API 端点是否可访问和认证信息是否有效
-3. **"Failed to get WasmSigner instance"**: 确保 WASM 文件存在且加载正常
+1. **"Failed to create DevApiClient"**: 检查配置文件中的认证信息
+2. **"Model not available"**: 模型可能无使用次数或不存在
+3. **"Request failed"**: 验证网络连接和 API 端点
 
-### 日志查看
+### 调试方法
 ```bash
-# 查看 gateway 日志
-docker-compose -f docker-compose-rustproxy.yml logs gateway
-
-# 查看详细错误信息
+# 查看详细日志
 docker-compose -f docker-compose-rustproxy.yml logs --tail=50 gateway
+
+# 检查模型发现
+# 模型信息会在日志中显示
 ```
 
-RustProxy 主要用于特定的开发者 API 集成场景，需要对应的后端服务支持。如果你没有相应的开发者 API 服务，建议使用 DeepSeek 或 OpenRouter 等更通用的提供商。 
+## 🎯 最佳实践
+
+1. **使用友好的模型名称**: 如 `"claude-3.5-sonnet"` 而不是完整的 API 标识符
+2. **配置模型过滤**: 使用 `model_filter` 只显示相关模型
+3. **监控使用限制**: 定期检查模型使用次数
+4. **缓存管理**: 系统会自动管理缓存，无需手动干预
+
+RustProxy 现在提供了完整的 TensorZero 原生配置体验，同时保持了强大的 DevV AI 服务集成能力！ 

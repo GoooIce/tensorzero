@@ -67,6 +67,18 @@ pub struct DevRequestBody {
     extra: ExtraPayload,
 }
 
+// Model information structure based on the API response
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ModelInfo {
+    pub display_name: String,
+    pub model_name: String,
+    pub model_type: String, // "base", "freeTrial", "premium" 
+    pub is_new: bool,
+    pub usage_left: u32,
+    pub icon: Option<String>,
+}
+
 pub struct DevApiClient {
     client: Client,
     wasm_signer: &'static WasmSigner,
@@ -93,32 +105,38 @@ impl Clone for DevApiClient {
 }
 
 impl DevApiClient {
+    /// Create a new DevApiClient with default configuration from environment variables
     pub fn new() -> Result<Self> {
         // Read configuration from environment variables with defaults
         let api_endpoint = env::var("API_ENDPOINT")
-            .unwrap_or_else(|_| "https://xxx".to_string());
+            .unwrap_or_else(|_| "https://api.devv.ai/api/v1/stream/chat".to_string());
         let device_id = env::var("DEVICE_ID")
-            .unwrap_or_else(|_| "xxxx".to_string());
+            .unwrap_or_else(|_| "default-device-id".to_string());
         let os_type = env::var("OS_TYPE")
             .unwrap_or_else(|_| "3".to_string());
         let sid = env::var("SID")
-        .unwrap_or_else(|_|"sid".to_string());
+            .unwrap_or_else(|_| "default-session-id".to_string());
             
-        info!(api_endpoint, device_id, os_type, "DevApiClient configured");
-        // debug!("api_endpoint: {}", api_endpoint);
-        // debug!("device_id: {}", device_id);
-        // debug!("os_type: {}", os_type);
-        // debug!("sid: {}", sid);
+        Self::with_config(api_endpoint, device_id, os_type, sid)
+    }
+
+    /// Create a new DevApiClient with explicit configuration
+    pub fn with_config(
+        api_endpoint: String,
+        device_id: String,
+        os_type: String,
+        sid: String,
+    ) -> Result<Self> {
+        info!(api_endpoint, device_id, os_type, sid, "DevApiClient configured");
 
         let client = Client::builder().build()
             .context("Failed to build reqwest client")?;
         let wasm_signer = WasmSigner::get_instance()
-            .context("Failed to get WasmSigner instance")?; // Propagate error if init failed
+            .context("Failed to get WasmSigner instance")?;
             
         Ok(Self {
             client,
             wasm_signer,
-            // Store the configuration
             api_endpoint,
             device_id,
             os_type,
@@ -262,5 +280,59 @@ impl DevApiClient {
 
         // Return the byte stream
         Ok(response.bytes_stream())
+    }
+
+    /// Get the list of available models from the API
+    #[instrument(skip(self))]
+    pub async fn get_models(&self) -> Result<Vec<ModelInfo>> {
+        debug!("Getting available models from API...");
+
+        // Build the models API URL
+        let models_url = format!("{}/api/v1/models", self.api_endpoint.replace("/api/v1/stream/chat", ""));
+        
+        // Create headers for the models request
+        let mut headers = HeaderMap::new();
+        headers.insert(http::header::ACCEPT, "application/json, text/plain, */*".parse()?);
+        headers.insert("accept-language", "en".parse()?);
+        headers.insert("device-id", self.device_id.parse()?);
+        headers.insert("os-type", self.os_type.parse()?);
+        headers.insert("origin", "https://devv.ai".parse()?);
+        headers.insert("referer", "https://devv.ai/".parse()?);
+        headers.insert("sec-fetch-dest", "empty".parse()?);
+        headers.insert("sec-fetch-mode", "cors".parse()?);
+        headers.insert("sec-fetch-site", "same-site".parse()?);
+        headers.insert("sid", self.sid.parse()?);
+        headers.insert("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36".parse()?);
+
+        debug!(?headers, "Constructed models request headers");
+
+        // Make the request
+        let response = self.client
+            .get(&models_url)
+            .headers(headers)
+            .send()
+            .await
+            .context("Failed to send models request")?;
+
+        if !response.status().is_success() {
+            return Err(anyhow!(
+                "Models API returned non-success status: {}",
+                response.status()
+            ));
+        }
+
+        // Parse the response
+        let models_text = response
+            .text()
+            .await
+            .context("Failed to read models response")?;
+
+        debug!("Models response: {}", models_text);
+
+        let models: Vec<ModelInfo> = serde_json::from_str(&models_text)
+            .context("Failed to parse models response")?;
+
+        info!("Retrieved {} models from API", models.len());
+        Ok(models)
     }
 } 

@@ -1,0 +1,426 @@
+# TensorZero UI 国际化（i18n）产品需求文档
+
+## 1. 项目概述
+
+### 1.1 背景
+TensorZero 是一个 AI 推理管理平台，当前仅支持英语界面。随着全球用户的增长，需要实现多语言支持以提升用户体验并扩大市场覆盖。
+
+### 1.2 目标
+- 为 TensorZero UI 添加完整的国际化支持
+- 支持多种语言和地区
+- 保持良好的开发者体验（在开发模式下可以对照查看英文原文）
+- 确保 TypeScript 类型安全
+- 优化性能和 SEO
+
+### 1.3 技术栈分析
+- **框架**: React Router v7（SSR 支持）
+- **构建工具**: Vite
+- **样式**: Tailwind CSS + Radix UI
+- **状态管理**: React Context API
+- **类型检查**: TypeScript
+
+## 2. 需求分析
+
+### 2.1 功能需求
+
+#### 2.1.1 核心功能
+- **静态文本翻译**: 支持 UI 界面所有静态文本的翻译
+- **动态内容翻译**: 支持运行时生成的内容翻译
+- **语言切换**: 提供便捷的语言切换机制
+- **数据格式化**: 支持日期、时间、数字的本地化格式
+- **URL 本地化**: 支持本地化的路由路径
+- **元数据翻译**: 支持页面标题、描述等 SEO 元数据的翻译
+
+#### 2.1.2 高级功能
+- **命名空间管理**: 按功能模块组织翻译文件
+- **复数规则**: 支持复杂的复数形式（如中文、阿拉伯语）
+- **文本插值**: 支持动态变量插值
+- **异步加载**: 按需加载翻译资源
+- **实时更新**: 支持开发环境下的翻译文件热更新
+
+### 2.2 支持的语言
+
+#### 第一阶段（MVP）
+- 英语（en-US）- 默认语言
+- 简体中文（zh-CN）
+
+
+#### 第二阶段（扩展）
+- 法语（fr-FR）
+- 西班牙语（es-ES）
+- 韩语（ko-KR）
+- 俄语（ru-RU）
+- 日语（ja-JP）
+- 德语（de-DE）
+
+### 2.3 非功能需求
+
+#### 2.3.1 性能要求
+- 初始包体积增长不超过 20KB
+- 语言切换延迟不超过 100ms
+- 支持代码分割和懒加载
+
+#### 2.3.2 开发体验
+- TypeScript 类型安全
+- 自动补全和错误检测
+- 简洁的 API 设计
+- 良好的开发工具支持
+
+#### 2.3.3 维护性
+- 翻译文件结构清晰
+- 支持翻译状态管理
+- 便于非技术人员维护翻译
+
+## 3. 技术方案
+
+### 3.1 库选择分析
+
+基于调研，推荐使用 **react-i18next** 作为主要的 i18n 解决方案：
+
+#### 3.1.1 选择理由
+- **React Router v7 兼容性**: 良好的 SSR 支持
+- **灵活性**: 支持多种集成模式和插件生态
+- **TypeScript 支持**: 优秀的类型安全特性
+- **性能**: 支持懒加载和命名空间
+- **社区成熟度**: 广泛的社区支持和维护
+
+#### 3.1.2 对比其他方案
+- **react-intl**: ICU 格式标准化，但配置复杂
+- **Intlayer**: 类型安全优秀，但社区较小，生态不成熟
+
+### 3.2 架构设计
+
+#### 3.2.1 文件结构
+```
+app/
+├── i18n/
+│   ├── index.ts                  # i18n 配置和初始化
+│   ├── resources/
+│   │   ├── en/
+│   │   │   ├── common.json       # 通用翻译
+│   │   │   ├── navigation.json   # 导航相关
+│   │   │   ├── datasets.json     # 数据集页面
+│   │   │   ├── evaluations.json  # 评估页面
+│   │   │   ├── observability.json # 可观测性页面
+│   │   │   └── optimization.json  # 优化页面
+│   │   ├── zh-CN/
+│   │   │   └── ... (同上)
+│   │   └── ... (其他语言)
+│   ├── hooks/
+│   │   ├── useTranslation.ts     # 封装的翻译 Hook
+│   │   └── useLanguage.ts        # 语言管理 Hook
+│   └── types.ts                  # TypeScript 类型定义
+├── components/
+│   └── LanguageSwitcher.tsx      # 语言切换组件
+└── ...
+```
+
+#### 3.2.2 核心配置
+```typescript
+// app/i18n/index.ts
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import Backend from 'i18next-http-backend';
+import LanguageDetector from 'i18next-browser-languagedetector';
+
+const supportedLocales = ['en-US', 'zh-CN', 'ja-JP', 'de-DE'];
+const defaultLocale = 'en-US';
+const fallbackLocale = 'en-US';
+
+i18n
+  .use(Backend)
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    fallbackLng: fallbackLocale,
+    supportedLngs: supportedLocales,
+    defaultNS: 'common',
+    ns: ['common', 'navigation', 'datasets', 'evaluations', 'observability', 'optimization'],
+    
+    interpolation: {
+      escapeValue: false,
+    },
+    
+    backend: {
+      loadPath: '/locales/{{lng}}/{{ns}}.json',
+    },
+    
+    detection: {
+      order: ['localStorage', 'navigator', 'htmlTag'],
+      caches: ['localStorage'],
+    },
+  });
+```
+
+#### 3.2.3 SSR 支持
+```typescript
+// app/entry.server.tsx (增强版)
+import { createInstance } from 'i18next';
+import { I18nextProvider, initReactI18next } from 'react-i18next';
+import Backend from 'i18next-fs-backend';
+
+export default function handleRequest(
+  request: Request,
+  responseStatusCode: number,
+  responseHeaders: Headers,
+  routerContext: EntryContext,
+  loadContext: AppLoadContext
+) {
+  return new Promise(async (resolve, reject) => {
+    const instance = createInstance();
+    const lng = detectLanguage(request); // 从请求中检测语言
+    
+    await instance
+      .use(initReactI18next)
+      .use(Backend)
+      .init({
+        lng,
+        fallbackLng: 'en-US',
+        ns: getNamespacesFromRoutes(routerContext),
+        backend: {
+          loadPath: resolve('./public/locales/{{lng}}/{{ns}}.json'),
+        },
+      });
+
+    const { pipe, abort } = renderToPipeableStream(
+      <I18nextProvider i18n={instance}>
+        <ServerRouter context={routerContext} url={request.url} />
+      </I18nextProvider>,
+      // ... 其他配置
+    );
+  });
+}
+```
+
+### 3.3 路由本地化
+
+#### 3.3.1 URL 结构
+- 默认语言（英语）: `/datasets`
+- 其他语言: `/zh-CN/datasets`, `/ja-JP/datasets`
+
+#### 3.3.2 路由配置
+```typescript
+// app/routes.ts (更新版)
+import { type RouteConfig, route } from "@react-router/dev/routes";
+
+export default [
+  // 默认语言路由
+  route("", "routes/index.tsx"),
+  route("datasets", "routes/datasets/route.tsx"),
+  
+  // 本地化路由
+  route(":locale", "routes/localized-layout.tsx", [
+    route("", "routes/index.tsx"),
+    route("datasets", "routes/datasets/route.tsx"),
+    // ... 其他路由
+  ]),
+] satisfies RouteConfig;
+```
+
+### 3.4 组件集成
+
+#### 3.4.1 翻译 Hook
+```typescript
+// app/i18n/hooks/useTranslation.ts
+import { useTranslation as useI18nextTranslation } from 'react-i18next';
+
+export function useTranslation(namespace?: string) {
+  const { t, i18n } = useI18nextTranslation(namespace);
+  
+  return {
+    t,
+    language: i18n.language,
+    changeLanguage: i18n.changeLanguage,
+    dir: i18n.dir(),
+  };
+}
+```
+
+#### 3.4.2 语言切换组件
+```typescript
+// app/components/LanguageSwitcher.tsx
+import { useTranslation } from '~/i18n/hooks/useTranslation';
+
+const languages = [
+  { code: 'en-US', name: 'English' },
+  { code: 'zh-CN', name: '简体中文' },
+  { code: 'ja-JP', name: '日本語' },
+  { code: 'de-DE', name: 'Deutsch' },
+];
+
+export function LanguageSwitcher() {
+  const { language, changeLanguage } = useTranslation();
+  
+  return (
+    <Select onValueChange={changeLanguage} value={language}>
+      <SelectTrigger>
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {languages.map(lang => (
+          <SelectItem key={lang.code} value={lang.code}>
+            {lang.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+```
+
+## 4. 实施计划
+
+### 4.1 第一阶段：基础设施（2 周）
+- [ ] 安装和配置 react-i18next
+- [ ] 设置 TypeScript 类型定义
+- [ ] 创建翻译文件结构
+- [ ] 实现基础的服务端渲染支持
+- [ ] 创建语言切换组件
+
+### 4.2 第二阶段：核心页面翻译（3 周）
+- [ ] 翻译导航和公共组件
+- [ ] 翻译首页内容
+- [ ] 翻译数据集管理页面
+- [ ] 翻译评估页面
+- [ ] 翻译可观测性页面
+
+### 4.3 第三阶段：高级功能（2 周）
+- [ ] 实现路由本地化
+- [ ] 添加日期/时间格式化
+- [ ] 优化性能和懒加载
+- [ ] 添加翻译管理工具
+
+### 4.4 第四阶段：多语言内容（2 周）
+- [ ] 完成中文翻译
+- [ ] 完成日语翻译
+- [ ] 完成德语翻译
+- [ ] 测试和优化
+
+## 5. 开发指南
+
+### 5.1 翻译文件规范
+
+#### 5.1.1 命名约定
+- 使用 camelCase 命名键
+- 使用点分隔符表示层级关系
+- 保持键名语义化
+
+```json
+// common.json
+{
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit"
+  },
+  "status": {
+    "loading": "Loading...",
+    "error": "Error occurred",
+    "success": "Operation successful"
+  }
+}
+```
+
+#### 5.1.2 插值语法
+```json
+{
+  "welcome": "Welcome back, {{username}}!",
+  "itemCount": "You have {{count}} item",
+  "itemCount_plural": "You have {{count}} items"
+}
+```
+
+### 5.2 组件使用示例
+
+#### 5.2.1 基础翻译
+```typescript
+function MyComponent() {
+  const { t } = useTranslation('datasets');
+  
+  return (
+    <div>
+      <h1>{t('title')}</h1>
+      <p>{t('description')}</p>
+    </div>
+  );
+}
+```
+
+#### 5.2.2 带插值的翻译
+```typescript
+function UserGreeting({ username }: { username: string }) {
+  const { t } = useTranslation();
+  
+  return <h1>{t('welcome', { username })}</h1>;
+}
+```
+
+#### 5.2.3 复数形式
+```typescript
+function ItemCounter({ count }: { count: number }) {
+  const { t } = useTranslation();
+  
+  return <span>{t('itemCount', { count })}</span>;
+}
+```
+
+## 6. 质量保证
+
+### 6.1 测试策略
+- **单元测试**: 测试翻译键的正确性
+- **集成测试**: 测试语言切换功能
+- **E2E 测试**: 测试多语言用户流程
+- **视觉回归测试**: 确保不同语言下 UI 布局正常
+
+### 6.2 翻译质量
+- 建立翻译审核流程
+- 使用专业翻译服务
+- 收集用户反馈
+- 定期更新和维护
+
+### 6.3 性能监控
+- 监控包体积变化
+- 测量语言切换性能
+- 优化资源加载策略
+
+## 7. 风险和缓解措施
+
+### 7.1 技术风险
+- **风险**: SSR 配置复杂可能导致渲染问题
+- **缓解**: 充分测试服务端渲染，提供降级策略
+
+- **风险**: 包体积可能显著增加
+- **缓解**: 实施代码分割和懒加载策略
+
+### 7.2 业务风险
+- **风险**: 翻译质量可能影响用户体验
+- **缓解**: 建立专业的翻译和审核流程
+
+- **风险**: 维护成本可能较高
+- **缓解**: 选择成熟的工具和建立高效的工作流程
+
+## 8. 成功指标
+
+### 8.1 技术指标
+- 翻译覆盖率 > 95%
+- 包体积增长 < 20KB
+- 语言切换延迟 < 100ms
+- TypeScript 类型安全覆盖率 100%
+
+### 8.2 业务指标
+- 非英语用户满意度提升
+- 多语言用户留存率
+- 国际市场覆盖扩展
+
+## 9. 未来扩展
+
+### 9.1 短期规划
+- 增加更多语言支持
+- 实现 RTL（从右到左）语言支持
+- 集成翻译管理平台
+
+### 9.2 长期规划
+- AI 辅助翻译优化
+- 用户自定义语言包
+- 动态内容翻译服务

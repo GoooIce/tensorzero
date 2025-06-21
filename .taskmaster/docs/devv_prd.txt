@@ -58,3 +58,29 @@
 预计开发时间：1-2 周
 -   第 1 周：重构 `rust_proxy` 为库，并在 `tensorzero` 中完成基本集成和非流式 API 对接。
 -   第 2 周：实现流式响应处理、错误处理、编写集成测试和文档。 
+
+## 补充说明
+模型列表获取
+```
+curl 'https://api.devv.ai/api/v1/models' \
+  -H 'accept: application/json, text/plain, */*' \
+  -H 'accept-language: zh' \
+  -H 'device-id: 0cb9ea5d737e1b7544c2d70714ab4a5cd537d14a' \
+  -H 'origin: https://devv.ai' \
+  -H 'os-type: 3' \
+  -H 'priority: u=1, i' \
+  -H 'referer: https://devv.ai/' \
+  -H 'sec-ch-ua: "Google Chrome";v="137", "Chromium";v="137", "Not/A)Brand";v="24"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "macOS"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-site' \
+  -H 'sid: nlKhhERSrXH27gJjsOMyV9pqMNrjEwNecK7CUaDW0ER5FkxNCWxy4u4iIv6SgyViI8qHyiEjztvYQRxmFApGBw' \
+  -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36'
+```
+
+返回内容
+```
+[{"displayName":"Gemini 2.0 Flash","modelName":"gemini-2.0-flash-001","modelType":"base","isNew":false,"usageLeft":0,"icon":"https://static.devv.ai/model-icons/gemini.jpeg"},{"displayName":"GPT-4.1 mini","modelName":"gpt-4.1-mini","modelType":"base","isNew":false,"usageLeft":0,"icon":"https://static.devv.ai/model-icons/gpt-4o.jpeg"},{"displayName":"Gemini 1.5 Pro","modelName":"gemini-1.5-pro-002","modelType":"freeTrial","isNew":false,"usageLeft":0,"icon":"https://static.devv.ai/model-icons/gemini.jpeg"},{"displayName":"Claude 3.7 Sonnet","modelName":"us.anthropic.claude-3-7-sonnet-20250219-v1:0","modelType":"premium","isNew":false,"usageLeft":0,"icon":"https://static.devv.ai/model-icons/claude.jpeg"},{"displayName":"Claude 3.7 Sonnet Thinking","modelName":"us.anthropic.claude-3-7-sonnet-20250219-v1:0-thinking","modelType":"premium","isNew":false,"usageLeft":0,"icon":"https://static.devv.ai/model-icons/claude.jpeg"},{"displayName":"Claude Sonnet 4","modelName":"us.anthropic.claude-sonnet-4-20250514-v1:0","modelType":"premium","isNew":true,"usageLeft":0,"icon":"https://static.devv.ai/model-icons/claude.jpeg"},{"displayName":"Claude Opus 4","modelName":"us.anthropic.claude-opus-4-20250514-v1:0","modelType":"premium","isNew":true,"usageLeft":10,"icon":"https://static.devv.ai/model-icons/claude.jpeg"},{"displayName":"GPT-4.1","modelName":"gpt-4.1","modelType":"premium","isNew":false,"usageLeft":0,"icon":"https://static.devv.ai/model-icons/gpt-4o.jpeg"},{"displayName":"o3","modelName":"o3","modelType":"premium","isNew":false,"usageLeft":10,"icon":"https://static.devv.ai/model-icons/o1.jpeg"}]
+```
